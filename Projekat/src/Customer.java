@@ -37,9 +37,13 @@ public class Customer extends User {
     // FILE IO
     
     
-    public void loadInCustomers(String filename) {
+    public void loadInCustomers() {
+    	
+    	String sp = System.getProperty(File.separator);
+    	
 		try {
-			File file = new File("src/fajlovi/" + filename);
+			File file = new File("src" + sp + "fajlovi" + sp + "Customers.csv");
+
 			BufferedReader reader = new BufferedReader(new FileReader(file));
 			
 			String row;
@@ -71,9 +75,13 @@ public class Customer extends User {
 	}
     
     
-    public void saveCustomers(String filename) {
+    public void saveCustomers() {
+    	
+    	String sp = System.getProperty(File.separator);
+    	
 		try {
-			File file = new File("src/fajlovi/" + filename);
+			File file = new File("src" + sp + "fajlovi" + sp + "Customers.csv");
+		
 			String content = "";
 			for (Customer customer: allCustomers) {
 				content +=

@@ -1,8 +1,15 @@
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 public class Vehicle {
 
+	ArrayList<Vehicle> allVehicles = new ArrayList<Vehicle>();
 	
     public Vehicle() {
     	super();
@@ -140,7 +147,71 @@ public class Vehicle {
 
     private int VINNum;
 
-    //public Driver vehicle;
-
+    
+    // FILE IO
+    
+    
+    public void loadInVehicles() {
+    	
+    	String sp = System.getProperty(File.separator);
+    	
+		try {
+			File file = new File("src" + sp + "fajlovi" + sp + "Vehicles.csv");
+		
+			BufferedReader reader = new BufferedReader(new FileReader(file));
+			
+			String row;
+			while ((row = reader.readLine()) != null) {
+				
+				String[] split = row.split("\\|");
+				
+				
+				String make = split[0];
+				String model = split[1];
+				int yearOfMake = Integer.parseInt(split[2]);
+				String registrationNum = split[3];
+				String taxiVehicleNum = split[4];
+				VehicleType type = split[5];
+				Driver driver= split[6];
+				int VINNum= Integer.parseInt(split[7]);
+				
+				Vehicle vehicle1 = new Vehicle(make, model, yearOfMake, registrationNum, taxiVehicleNum,
+					 type, driver, VINNum);
+				allVehicles.add(vehicle1);
+				
+				// za proveru
+				System.out.println(allVehicles);
+			}
+			reader.close();
+			
+		} catch (IOException e) {
+			System.out.println("Greska prilikom citanja podataka o vozilima.");
+			e.printStackTrace();
+		}
+	}
+    
+    
+    public void saveVehicles() {
+    	
+    	String sp = System.getProperty(File.separator);
+    	
+		try {
+			File file = new File("src" + sp + "fajlovi" + sp + "Vehicles.csv");
+		
+			String content = "";
+			for (Vehicle vehicle: allVehicles) {
+				content += vehicle.getMake() + "|" + vehicle.getModel() + "|"
+						+ vehicle.getYearOfMake() + "|" + vehicle.getRegistrationNum() + "|"
+						+ vehicle.getTaxiVehicleNum() + "|" + vehicle.getType() + "|"
+						+ vehicle.getDriver() + "|" + vehicle.getVINNum() +"\n";
+			}
+			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+			writer.write(content);
+			writer.close();
+			
+		} catch (IOException e) {
+			System.out.println("Greska prilikom upisivanja vozila.");
+		}
+	}
 
 }

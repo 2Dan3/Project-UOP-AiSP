@@ -122,9 +122,13 @@ public class Dispatcher extends Employee {
     
     // FILE IO
     
-    public void loadInDispatchers(String filename) {
+    public void loadInDispatchers() {
+    	
+    	String sp = System.getProperty(File.separator);
+    	
 		try {
-			File file = new File("src/fajlovi/" + filename);
+			File file = new File("src" + sp + "fajlovi" + sp + "Dispatchers.csv");
+		
 			BufferedReader reader = new BufferedReader(new FileReader(file));
 			
 			String row;
@@ -159,9 +163,13 @@ public class Dispatcher extends Employee {
 	}
     
     
-    public void saveDispatchers(String filename) {
+    public void saveDispatchers() {
+    	
+    	String sp = System.getProperty(File.separator);
+    	
 		try {
-			File file = new File("src/fajlovi/" + filename);
+			File file = new File("src" + sp + "fajlovi" + sp + "Dispatchers.csv");
+
 			String content = "";
 			for (Dispatcher dp: allDispatchers) {
 				content += dp.getPhoneLineNum() + "|" + dp.getDept() + "|" + dp.getSalary() + "|"

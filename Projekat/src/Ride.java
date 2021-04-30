@@ -1,8 +1,16 @@
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 public class Ride {
 
+	ArrayList<Ride> allRides = new ArrayList<Ride>();
+	
     public Ride() {
     	super();
 		this.requestDateTime = "";
@@ -196,6 +204,73 @@ public class Ride {
     private int RideID;
 
     
+    //FILE IO
     
+    
+    public void loadInRides() {
+    	
+    	String sp = System.getProperty(File.separator);
+    	
+		try {
+			File file = new File("src" + sp + "fajlovi" + sp + "Rides.csv");
+			BufferedReader reader = new BufferedReader(new FileReader(file));
+			
+			String row;
+			while ((row = reader.readLine()) != null) {
+				
+				String[] split = row.split("\\|");
+				
+				
+				String requestDateTime = split[0];
+				String startingAddress = split[1];
+				String destinationAddress = split[2];
+				Customer customer = split[3];
+				Driver driver = split[4];
+				double distanceTraveled = Double.parseDouble(split[5]);
+				double duration= Double.parseDouble(split[6]);
+				RequestStatus status= split[7];
+				RequestType requestType = split[8];
+				TaxiService startingPrice = split[9];
+				TaxiService pricePerKm = split[10];
+				int rideID = Integer.parseInt(split[11]);
+				
+				Ride ride = new Ride(requestDateTime, startingAddress, destinationAddress, customer,
+						driver, distanceTraveled, duration, status, requestType,
+						startingPrice, pricePerKm, rideID);
+				allRides.add(ride);
+				
+				// za proveru
+				System.out.println(allRides);
+			}
+			reader.close();
+		} catch (IOException e) {
+			System.out.println("Greska prilikom citanja podataka o voznjama.");
+			e.printStackTrace();
+		}
+	}
+    
+    
+    public void saveRides() {
+    	
+    	String sp = System.getProperty(File.separator);
+    	
+		try {
+			File file = new File("src" + sp + "fajlovi" + sp + "Rides.csv");
+			String content = "";
+			for (Ride ride: allRides) {
+				content += ride.getRequestDateTime() + "|" + ride.getStartingAddress() + "|"
+						+ ride.getDestinationAddress() + "|" + ride.getCustomer() + "|"
+						+ ride.getDriver() + "|" + ride.getDistanceTraveled() + "|"
+						+ ride.getDuration() + "|" + ride.getStatus()+ "|" + ride.getRequestType() + "|"
+						+ ride.getStartingPrice() + "|" + ride.getPricePerKm() + "|" + ride.getRideID() +"\n";
+			}
+			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+			writer.write(content);
+			writer.close();
+			
+		} catch (IOException e) {
+			System.out.println("Greska prilikom upisivanja voznji.");
+		}
+	}
     
 }

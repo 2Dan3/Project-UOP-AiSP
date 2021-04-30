@@ -102,8 +102,11 @@ public class Driver extends Employee {
     
     
     public void loadInDrivers(String filename) {
+    	
+    	String sp = System.getProperty(File.separator);
+    	
 		try {
-			File file = new File("src/fajlovi/" + filename);
+			File file = new File("src" + sp + "fajlovi" + sp + "Drivers.csv");
 			BufferedReader reader = new BufferedReader(new FileReader(file));
 			
 			String row;
@@ -140,8 +143,11 @@ public class Driver extends Employee {
     
     
     public void saveDrivers(String filename) {
+    	
+    	String sp = System.getProperty(File.separator);
+    	
 		try {
-			File file = new File("src/fajlovi/" + filename);
+			File file = new File("src" + sp + "fajlovi" + sp + "Drivers.csv");
 			String content = "";
 			for (Driver driver: allDrivers) {
 				content += driver.getMembershipCardNum() + "|" + driver.getVehicle() + "|"
