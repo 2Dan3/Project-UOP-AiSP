@@ -1,3 +1,4 @@
+package entities;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -7,7 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
-public class Vehicle {
+public class Vehicle implements CRUDOps {
 
 	ArrayList<Vehicle> allVehicles = new ArrayList<Vehicle>();
 	
@@ -38,11 +39,19 @@ public class Vehicle {
 	}
     
     // GETTERS & SETTERS
+    
+    public ArrayList<Vehicle> getAllVehicles() {
+		return allVehicles;
+	}
 
+
+	public void setAllVehicles(ArrayList<Vehicle> allVehicles) {
+		this.allVehicles = allVehicles;
+	}
+    
 	public String getMake() {
 		return make;
 	}
-
 
 	public void setMake(String make) {
 		this.make = make;
@@ -146,17 +155,24 @@ public class Vehicle {
     private Driver driver;
 
     private int VINNum;
+    
+    
+    public void showAll() {
+    	for (Vehicle v : allVehicles) {
+    		System.out.println(v);
+    	}
+    }
 
     
     // FILE IO
     
     
-    public void loadInVehicles() {
+    public void loadInVehicles(String filename) {
     	
     	String sp = System.getProperty(File.separator);
     	
 		try {
-			File file = new File("src" + sp + "fajlovi" + sp + "Vehicles.csv");
+			File file = new File("src" + sp + "dataFiles" + sp + filename);
 		
 			BufferedReader reader = new BufferedReader(new FileReader(file));
 			
@@ -171,16 +187,14 @@ public class Vehicle {
 				int yearOfMake = Integer.parseInt(split[2]);
 				String registrationNum = split[3];
 				String taxiVehicleNum = split[4];
-				VehicleType type = split[5];
-				Driver driver= split[6];
+				VehicleType type = VehicleType.values()[Integer.parseInt(split[5])];
+				Driver driver = split[6];
 				int VINNum= Integer.parseInt(split[7]);
 				
 				Vehicle vehicle1 = new Vehicle(make, model, yearOfMake, registrationNum, taxiVehicleNum,
 					 type, driver, VINNum);
 				allVehicles.add(vehicle1);
-				
-				// za proveru
-				System.out.println(allVehicles);
+
 			}
 			reader.close();
 			
@@ -191,12 +205,12 @@ public class Vehicle {
 	}
     
     
-    public void saveVehicles() {
+    public void saveVehicles(String filename) {
     	
     	String sp = System.getProperty(File.separator);
     	
 		try {
-			File file = new File("src" + sp + "fajlovi" + sp + "Vehicles.csv");
+			File file = new File("src" + sp + "dataFiles" + sp + filename);
 		
 			String content = "";
 			for (Vehicle vehicle: allVehicles) {

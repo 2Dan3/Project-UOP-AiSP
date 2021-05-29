@@ -1,3 +1,4 @@
+package entities;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -14,23 +15,23 @@ public class Ride {
     public Ride() {
     	super();
 		this.requestDateTime = "";
-		this.startingAddress = startingAddress;
-		this.destinationAddress = destinationAddress;
-		this.customer = customer;
-		this.driver = driver;
-		this.distanceTraveled = distanceTraveled;
-		this.duration = duration;
-		this.status = status;
-		this.requestType = requestType;
-		this.startingPrice = startingPrice;
-		this.pricePerKm = pricePerKm;
+		this.startingAddress = "";
+		this.destinationAddress = "";
+		this.customer = new Customer();
+		this.driver = new Driver();
+		this.distanceTraveled = 0;
+		this.duration = 0;
+		this.status = RequestStatus.CREATED;
+		this.requestType = RequestType.PHONE;
+		this.startingPrice = 0;
+		this.pricePerKm = 0;
 		RideID = 0;
     }
 
     
     public Ride(String requestDateTime, String startingAddress, String destinationAddress, Customer customer,
 			Driver driver, double distanceTraveled, double duration, RequestStatus status, RequestType requestType,
-			TaxiService startingPrice, TaxiService pricePerKm, int rideID) {
+			double startingPrice, double pricePerKm, int rideID) {
 		super();
 		this.requestDateTime = requestDateTime;
 		this.startingAddress = startingAddress;
@@ -47,7 +48,15 @@ public class Ride {
 	}
     
     // GETTERS & SETTERS
+    
+    public ArrayList<Ride> getAllRides() {
+		return allRides;
+	}
 
+	public void setAllRides(ArrayList<Ride> allRides) {
+		this.allRides = allRides;
+	}
+	
 	public String getRequestDateTime() {
 		return requestDateTime;
 	}
@@ -138,22 +147,22 @@ public class Ride {
 	}
 
 
-	public TaxiService getStartingPrice() {
+	public double getStartingPrice() {
 		return startingPrice;
 	}
 
 
-	public void setStartingPrice(TaxiService startingPrice) {
+	public void setStartingPrice(double startingPrice) {
 		this.startingPrice = startingPrice;
 	}
 
 
-	public TaxiService getPricePerKm() {
+	public double getPricePerKm() {
 		return pricePerKm;
 	}
 
 
-	public void setPricePerKm(TaxiService pricePerKm) {
+	public void setPricePerKm(double pricePerKm) {
 		this.pricePerKm = pricePerKm;
 	}
 
@@ -197,9 +206,9 @@ public class Ride {
 
     private RequestType requestType;
 
-    private TaxiService startingPrice;
+    private double startingPrice;
 
-    private TaxiService pricePerKm;
+    private double pricePerKm;
 
     private int RideID;
 
@@ -207,12 +216,12 @@ public class Ride {
     //FILE IO
     
     
-    public void loadInRides() {
+    public void loadInRides(String filename) {
     	
     	String sp = System.getProperty(File.separator);
     	
 		try {
-			File file = new File("src" + sp + "fajlovi" + sp + "Rides.csv");
+			File file = new File("src" + sp + "dataFiles" + sp + filename);
 			BufferedReader reader = new BufferedReader(new FileReader(file));
 			
 			String row;
@@ -228,10 +237,10 @@ public class Ride {
 				Driver driver = split[4];
 				double distanceTraveled = Double.parseDouble(split[5]);
 				double duration= Double.parseDouble(split[6]);
-				RequestStatus status= split[7];
-				RequestType requestType = split[8];
-				TaxiService startingPrice = split[9];
-				TaxiService pricePerKm = split[10];
+				RequestStatus status= RequestStatus.values()[Integer.parseInt(split[7])];
+				RequestType requestType = RequestType.values()[Integer.parseInt(split[8])];
+				double startingPrice = Double.parseDouble(split[9]);
+				double pricePerKm = Double.parseDouble(split[10]);
 				int rideID = Integer.parseInt(split[11]);
 				
 				Ride ride = new Ride(requestDateTime, startingAddress, destinationAddress, customer,
@@ -239,8 +248,6 @@ public class Ride {
 						startingPrice, pricePerKm, rideID);
 				allRides.add(ride);
 				
-				// za proveru
-				System.out.println(allRides);
 			}
 			reader.close();
 		} catch (IOException e) {
@@ -250,18 +257,18 @@ public class Ride {
 	}
     
     
-    public void saveRides() {
+    public void saveRides(String filename) {
     	
     	String sp = System.getProperty(File.separator);
     	
 		try {
-			File file = new File("src" + sp + "fajlovi" + sp + "Rides.csv");
+			File file = new File("src" + sp + "dataFiles" + sp + filename);
 			String content = "";
 			for (Ride ride: allRides) {
-				content += ride.getRequestDateTime() + "|" + ride.getStartingAddress() + "|"
+				content += (String)ride.getRequestDateTime() + "|" + ride.getStartingAddress() + "|"
 						+ ride.getDestinationAddress() + "|" + ride.getCustomer() + "|"
 						+ ride.getDriver() + "|" + ride.getDistanceTraveled() + "|"
-						+ ride.getDuration() + "|" + ride.getStatus()+ "|" + ride.getRequestType() + "|"
+						+ ride.getDuration() + "|" + ride.getStatus().ordinal() + "|" + ride.getRequestType().ordinal() + "|"
 						+ ride.getStartingPrice() + "|" + ride.getPricePerKm() + "|" + ride.getRideID() +"\n";
 			}
 			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
