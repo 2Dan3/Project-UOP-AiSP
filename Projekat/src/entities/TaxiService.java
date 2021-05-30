@@ -4,14 +4,17 @@ import java.util.*;
 
 public abstract class TaxiService {
 
-    private int taxIdNum;
+    private static int taxIdNum;
 
-    private String location;
+    private static String location;
 
-    private String name;
+    private static String name;
 
-    private double startingPrice;
+    private static double startingPrice;
 
-    private double pricePerKm;
+    private static double pricePerKm;
 
+    
+    
+    
 }

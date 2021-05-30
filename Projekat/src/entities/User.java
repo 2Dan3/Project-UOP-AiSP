@@ -20,6 +20,8 @@ public abstract class User {
 
     protected String address;
     
+    protected boolean deleted;
+    
     
     public User() {
     	super();
@@ -28,13 +30,14 @@ public abstract class User {
 		this.name = "";
 		this.lastName = "";
 		this.jmbg = 0;
-		this.gender = Gender.FEMALE;
+		this.gender = Gender.MUSKI;
 		this.phoneNum = "";
 		this.address = "";
+		this.deleted = false;
     }
     
     public User(String username, String password, String name, String lastName, int jmbg, Gender gender,
-			String phoneNum, String address) {
+			String phoneNum, String address, boolean deleted) {
 		super();
 		this.username = username;
 		this.password = password;
@@ -44,6 +47,7 @@ public abstract class User {
 		this.gender = gender;
 		this.phoneNum = phoneNum;
 		this.address = address;
+		this.deleted = deleted;
 	}
 
 
@@ -143,7 +147,14 @@ public abstract class User {
 	public void setAddress(String address) {
 		this.address = address;
 	}
-
+	
+	public boolean isDeleted() {
+		return deleted;
+	}
+	
+	public void setDeleted(boolean b) {
+		this.deleted = b;
+	}
 
 
 	@Override

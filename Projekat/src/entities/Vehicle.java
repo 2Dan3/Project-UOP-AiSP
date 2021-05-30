@@ -8,9 +8,18 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
-public class Vehicle implements CRUDOps {
+public class Vehicle {
 
-	ArrayList<Vehicle> allVehicles = new ArrayList<Vehicle>();
+	static ArrayList<Vehicle> allVehicles = new ArrayList<Vehicle>();
+	private String make;
+    private String model;
+    private int yearOfMake;
+    private String registrationNum;
+    private String taxiVehicleNum;
+    private VehicleType type;
+    private boolean hasDriver;
+    private int VINNum;
+    private boolean deleted;
 	
     public Vehicle() {
     	super();
@@ -20,13 +29,14 @@ public class Vehicle implements CRUDOps {
 		this.registrationNum = "";
 		this.taxiVehicleNum = "";
 		this.type = VehicleType.CAR;
-		this.driver = new Driver();
+		this.hasDriver = false;
 		this.VINNum = 0;
+		this.deleted = false;
     }
     
 
     public Vehicle(String make, String model, int yearOfMake, String registrationNum, String taxiVehicleNum,
-			VehicleType type, Driver driver, int VINNum) {
+			VehicleType type, boolean hasDriver, int VINNum, boolean deleted) {
 		super();
 		this.make = make;
 		this.model = model;
@@ -34,21 +44,33 @@ public class Vehicle implements CRUDOps {
 		this.registrationNum = registrationNum;
 		this.taxiVehicleNum = taxiVehicleNum;
 		this.type = type;
-		this.driver = driver;
+		this.hasDriver = hasDriver;
 		this.VINNum = VINNum;
+		this.deleted = deleted;
 	}
     
     // GETTERS & SETTERS
     
-    public ArrayList<Vehicle> getAllVehicles() {
+    public static ArrayList<Vehicle> getAllVehicles() {
 		return allVehicles;
 	}
-
+    
 
 	public void setAllVehicles(ArrayList<Vehicle> allVehicles) {
 		this.allVehicles = allVehicles;
 	}
     
+	
+	
+	public boolean isDeleted() {
+		return deleted;
+	}
+	
+	public void setDeleted(boolean b) {
+		this.deleted = b;
+	}
+	
+	
 	public String getMake() {
 		return make;
 	}
@@ -108,13 +130,13 @@ public class Vehicle implements CRUDOps {
 	}
 
 
-	public Driver getDriver() {
-		return driver;
+	public boolean getHasDriver() {
+		return hasDriver;
 	}
 
 
-	public void setDriver(Driver driver) {
-		this.driver = driver;
+	public void setHasDriver(boolean hasDriver) {
+		this.hasDriver = hasDriver;
 	}
 
 
@@ -133,31 +155,13 @@ public class Vehicle implements CRUDOps {
 	@Override
 	public String toString() {
 		return "Vehicle [make=" + make + ", model=" + model + ", yearOfMake=" + yearOfMake + ", registrationNum="
-				+ registrationNum + ", taxiVehicleNum=" + taxiVehicleNum + ", type=" + type + ", driver=" + driver
+				+ registrationNum + ", taxiVehicleNum=" + taxiVehicleNum + ", type=" + type + ", hasDriver=" + hasDriver
 				+ ", VINNum=" + VINNum + "]";
 	}
 
-
-
-
-	private String make;
-
-    private String model;
-
-    private int yearOfMake;
-
-    private String registrationNum;
-
-    private String taxiVehicleNum;
-
-    private VehicleType type;
-
-    private Driver driver;
-
-    private int VINNum;
     
     
-    public void showAll() {
+    public static void showAll() {
     	for (Vehicle v : allVehicles) {
     		System.out.println(v);
     	}
@@ -169,7 +173,7 @@ public class Vehicle implements CRUDOps {
     
     public void loadInVehicles(String filename) {
     	
-    	String sp = System.getProperty(File.separator);
+    	String sp = System.getProperty("file.separator");
     	
 		try {
 			File file = new File("src" + sp + "dataFiles" + sp + filename);
@@ -188,11 +192,12 @@ public class Vehicle implements CRUDOps {
 				String registrationNum = split[3];
 				String taxiVehicleNum = split[4];
 				VehicleType type = VehicleType.values()[Integer.parseInt(split[5])];
-				Driver driver = split[6];
+				boolean hasDriver = Boolean.parseBoolean(split[6]);
 				int VINNum= Integer.parseInt(split[7]);
+				boolean deleted = Boolean.parseBoolean(split[8]);
 				
 				Vehicle vehicle1 = new Vehicle(make, model, yearOfMake, registrationNum, taxiVehicleNum,
-					 type, driver, VINNum);
+					 type, hasDriver, VINNum, deleted);
 				allVehicles.add(vehicle1);
 
 			}
@@ -207,7 +212,7 @@ public class Vehicle implements CRUDOps {
     
     public void saveVehicles(String filename) {
     	
-    	String sp = System.getProperty(File.separator);
+    	String sp = System.getProperty("file.separator");
     	
 		try {
 			File file = new File("src" + sp + "dataFiles" + sp + filename);
@@ -217,7 +222,7 @@ public class Vehicle implements CRUDOps {
 				content += vehicle.getMake() + "|" + vehicle.getModel() + "|"
 						+ vehicle.getYearOfMake() + "|" + vehicle.getRegistrationNum() + "|"
 						+ vehicle.getTaxiVehicleNum() + "|" + vehicle.getType() + "|"
-						+ vehicle.getDriver() + "|" + vehicle.getVINNum() +"\n";
+						+ vehicle.getHasDriver() + "|" + vehicle.getVINNum() + "|" + vehicle.isDeleted() + "\n";
 			}
 			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
 			writer.write(content);

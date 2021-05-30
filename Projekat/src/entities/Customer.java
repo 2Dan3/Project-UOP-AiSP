@@ -17,12 +17,14 @@ public class Customer extends User {
     }
     
     public Customer(String username, String password, String name, String lastName, int jmbg, Gender gender,
-			String phoneNum, String address) {
+			String phoneNum, String address, boolean deleted) {
     	super( username, password, name, lastName, jmbg, gender,
-    		 phoneNum, address);
+    		 phoneNum, address, deleted);
     }
     
 
+    
+    
     @Override
 	public String toString() {
 		return "Customer [korisnickoIme=" + username + ", lozinka=" + password + ", ime=" + name + ", prezime=" + lastName
@@ -41,10 +43,46 @@ public class Customer extends User {
     }
     
     
-    public void showAll() {
+    
+    
+    
+    public void showAllCustomers() {
     	for (Customer c : allCustomers) {
     		System.out.println(c);
     	}
+    }
+    
+    public void showCustomerMenu() {
+    	
+    	Scanner input = new Scanner(System.in);
+    	int cmd = -1;
+    	do {
+    		System.out.println("\n---------------------------------");
+    		System.out.println("1) Naruci voznju telefonom");
+    		System.out.println("2) Naruci voznju aplikacijom");
+    		System.out.println("0) Izlaz \n");
+    		
+    		cmd = Integer.parseInt(input.nextLine());
+    		
+    		switch (cmd) {
+	    		case 0: 
+	    			System.out.println("Dovi\u0111enja...");
+	    			break;
+	    		case 1: 
+	    			
+	    			break;
+	    		case 2:
+	    			System.out.println("Nije u funkciji za kt2");
+	    			break;
+	    			
+	    		default:
+	    			System.out.println("Gre\u0161ka, nepoznata komanda: " +cmd);
+    		}
+    		    		
+    	} while(cmd != 0);
+    	input.close();
+    	
+    		
     }
     
     
@@ -55,9 +93,6 @@ public class Customer extends User {
 		return allCustomers;
 	}
 
-	public void setAllCustomers(ArrayList<Customer> allCustomers) {
-		this.allCustomers = allCustomers;
-	}
     
 	
     // FILE IO
@@ -65,7 +100,7 @@ public class Customer extends User {
     
     public void loadInCustomers(String filename) {
     	
-    	String sp = System.getProperty(File.separator);
+    	String sp = System.getProperty("file.separator");
     	
 		try {
 			File file = new File("src" + sp + "dataFiles" + sp + filename);
@@ -86,8 +121,9 @@ public class Customer extends User {
 				Gender gender = Gender.values()[Integer.parseInt(split[5])];
 				String phoneNum = split[6];
 				String address = split[7];
+				boolean deleted = Boolean.parseBoolean(split[8]);
 				
-				Customer customer = new Customer(username, password, name, lastName, jmbg, gender, phoneNum, address);
+				Customer customer = new Customer(username, password, name, lastName, jmbg, gender, phoneNum, address, deleted);
 				allCustomers.add(customer);
 
 			}
@@ -101,7 +137,7 @@ public class Customer extends User {
 
 	public void saveCustomers(String filename) {
     	
-    	String sp = System.getProperty(File.separator);
+    	String sp = System.getProperty("file.separator");
     	
 		try {
 			File file = new File("src" + sp + "dataFiles" + sp + filename);
@@ -111,7 +147,7 @@ public class Customer extends User {
 				content +=
 						  customer.getUsername() + "|" + customer.getPassword() + "|"
 						+ customer.getName() + "|" + customer.getLastName()+ "|" + customer.getJmbg() + "|"
-						+ customer.getGender().ordinal() + "|" + customer.getPhoneNum() + "|" + customer.getAddress() +"\n";
+						+ customer.getGender().ordinal() + "|" + customer.getPhoneNum() + "|" + customer.getAddress() + "|" + customer.isDeleted() +"\n";
 			}
 			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
 			writer.write(content);

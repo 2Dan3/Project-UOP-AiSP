@@ -11,6 +11,18 @@ import java.util.*;
 public class Ride {
 
 	ArrayList<Ride> allRides = new ArrayList<Ride>();
+	private String requestDateTime;
+    private String startingAddress;
+    private String destinationAddress;
+    private Customer customer;
+    private Driver driver;
+    private double distanceTraveled;
+    private double duration;
+    private RequestStatus status;
+    private RequestType requestType;
+    private double startingPrice;
+    private double pricePerKm;
+    private int RideID;
 	
     public Ride() {
     	super();
@@ -28,7 +40,6 @@ public class Ride {
 		RideID = 0;
     }
 
-    
     public Ride(String requestDateTime, String startingAddress, String destinationAddress, Customer customer,
 			Driver driver, double distanceTraveled, double duration, RequestStatus status, RequestType requestType,
 			double startingPrice, double pricePerKm, int rideID) {
@@ -187,38 +198,13 @@ public class Ride {
 	}
 
 
-
-	private String requestDateTime;
-
-    private String startingAddress;
-
-    private String destinationAddress;
-
-    private Customer customer;
-
-    private Driver driver;
-
-    private double distanceTraveled;
-
-    private double duration;
-
-    private RequestStatus status;
-
-    private RequestType requestType;
-
-    private double startingPrice;
-
-    private double pricePerKm;
-
-    private int RideID;
-
     
     //FILE IO
     
     
     public void loadInRides(String filename) {
     	
-    	String sp = System.getProperty(File.separator);
+    	String sp = System.getProperty("file.separator");
     	
 		try {
 			File file = new File("src" + sp + "dataFiles" + sp + filename);
@@ -233,8 +219,8 @@ public class Ride {
 				String requestDateTime = split[0];
 				String startingAddress = split[1];
 				String destinationAddress = split[2];
-				Customer customer = split[3];
-				Driver driver = split[4];
+				Customer customer = findCustomer(split[3]);
+				Driver driver = findDriver(split[4]);
 				double distanceTraveled = Double.parseDouble(split[5]);
 				double duration= Double.parseDouble(split[6]);
 				RequestStatus status= RequestStatus.values()[Integer.parseInt(split[7])];
@@ -259,7 +245,7 @@ public class Ride {
     
     public void saveRides(String filename) {
     	
-    	String sp = System.getProperty(File.separator);
+    	String sp = System.getProperty("file.separator");
     	
 		try {
 			File file = new File("src" + sp + "dataFiles" + sp + filename);

@@ -8,43 +8,226 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
-public class Dispatcher extends Employee implements CRUDOps {
+import javax.swing.JFrame;
 
-	ArrayList<Dispatcher> allDispatchers = new ArrayList<Dispatcher>();
-	
+public class Dispatcher extends Employee {
+
+	static ArrayList<Dispatcher> allDispatchers = new ArrayList<Dispatcher>();
+	private int phoneLineNum;
+    private Department dept;
+    
     public Dispatcher() {
     	super();
-    	this.id = createNewID();
+    	
 		this.phoneLineNum = 0;
 		this.dept = Department.REQUESTS;
     }
     
     
-    public Dispatcher(int id, String username, String password, String name, String lastName, int jmbg, Gender gender,
-    		String phone, String address, double salary, int phoneLineNum, Department department) {
-		super(username, password, name, lastName, jmbg, gender, phone, address, salary);
-		this.id = id;
+    public Dispatcher(String username, String password, String name, String lastName, int jmbg, Gender gender,
+    		String phone, String address, double salary, int phoneLineNum, Department department, boolean deleted) {
+		super(username, password, name, lastName, jmbg, gender, phone, address, salary, deleted);
+
 		this.phoneLineNum = phoneLineNum;
 		this.dept = department;
 	}
     
-    // GETTERS & SETTERS
+    
+    
+    public static void showAllDispatchers() {
+    	for (Dispatcher d : allDispatchers) {
+    		System.out.println(d);
+    	}
+    }
+    
+    public static void addNewDispatcher() {
+    	Scanner sc = new Scanner(System.in);
+    	
+	    	System.out.println("Postavite korisnicko ime >> ");
+		    	String username = sc.nextLine();
+	    	System.out.println("Postavite lozinku >> ");
+		    	String password = sc.nextLine();
+	    	System.out.println("Ime >> ");
+		    	String name = sc.nextLine();
+	    	System.out.println("Prezime >> ");
+		    	String lastName = sc.nextLine();
+	    	System.out.println("JMBG >> ");
+		    	int jmbg = Integer.parseInt(sc.nextLine());
+	    	System.out.println("Pol [0 - ZENSKI   1 - MUSKI] >> ");
+		    	int g = Integer.parseInt(sc.nextLine());
+		    	Gender gender = Gender.values()[g];
+	    	System.out.println("Telefon >> ");
+		    	String phone = sc.nextLine();
+	    	System.out.println("Adresa >> ");
+		    	String address = sc.nextLine();
+	    	System.out.println("Plata >> ");
+	    		double salary = Double.parseDouble(sc.nextLine());
+			System.out.println("Broj telefonske linije >> ");
+				int phoneLineNum = Integer.parseInt(sc.nextLine());
+			System.out.println("Odeljenje na kom radi [0 - REKLAMACIJE    1 - PORUCIVANJE VOZNJI] >> ");
+				int d = Integer.parseInt(sc.nextLine());
+				Department department = Department.values()[d];
+			boolean deleted = false;
+    	sc.close();
+    	
+    	allDispatchers.add(new Dispatcher(username, password, name, lastName, jmbg, gender, phone, address, salary, phoneLineNum, department, deleted));
+    	
+    }
+    
+    public static void editDispatcher() {
+		System.out.println("Izmeniti dispecera [JMBG] >> ");
+		
+		Scanner sc = new Scanner(System.in);
+		int jmbg = Integer.parseInt(sc.nextLine());
+		
+    	for (int i = 0; i < allDispatchers.size(); i++) {
+			if (allDispatchers.get(i).getJmbg() == jmbg && !allDispatchers.get(i).isDeleted() ) {
+				
+				Dispatcher thisDispatcher = allDispatchers.get(i);
+				
+				System.out.println("Postavite korisnicko ime >> ");
+					thisDispatcher.setUsername(sc.nextLine());
+		    	System.out.println("Postavite lozinku >> ");
+		    		thisDispatcher.setPassword(sc.nextLine());
+		    	System.out.println("Ime >> ");
+		    		thisDispatcher.setName(sc.nextLine());
+		    	System.out.println("Prezime >> ");
+		    		thisDispatcher.setLastName(sc.nextLine());
+		    	System.out.println("Pol [0 - ZENSKI   1 - MUSKI] >> ");
+		    		thisDispatcher.setGender(Gender.values()[Integer.parseInt(sc.nextLine())]);
+		    	System.out.println("Telefon >> ");
+		    		thisDispatcher.setPhoneNum(sc.nextLine());
+		    	System.out.println("Adresa >> ");
+		    		thisDispatcher.setAddress(sc.nextLine());
+		    	System.out.println("Plata >> ");
+		    		thisDispatcher.setSalary(Double.parseDouble(sc.nextLine()));
+		    	System.out.println("Broj telefonske linije >> ");
+		    		thisDispatcher.setPhoneLineNum(Integer.parseInt(sc.nextLine()));
+		    	System.out.println("Odeljenje na kom radi [0 - REKLAMACIJE    1 - PORUCIVANJE VOZNJI] >> ");
+		    		thisDispatcher.setDept(Department.values()[Integer.parseInt(sc.nextLine())]);
+				
+				sc.close();
+				saveDispatchers("Dispatchers.csv");
+				break;
+			}
+		}	
+	}
+    public static void deleteDispatcher() {
+
+    	System.out.println("Obrisati dispecera [JMBG] >> ");
+		
+		Scanner sc = new Scanner(System.in);
+		int jmbg = Integer.parseInt(sc.nextLine());
+		
+    	for (int i = 0; i < allDispatchers.size(); i++) {
+			if (allDispatchers.get(i).getJmbg() == jmbg && !allDispatchers.get(i).isDeleted() ) {
+				allDispatchers.get(i).setDeleted(true);
+				saveDispatchers("Dispatchers.csv");
+				break;
+			}
+		}
+	}
+    
+
+
+	public static void dispatcherCRUDMenu() {
+		
+    	Scanner input = new Scanner(System.in);
+    	int cmd = -1;
+    	while(cmd != 0) {
+    		System.out.println("\n---------------------------------");
+    		System.out.println("1) Izmeni postojeceg dispecera");
+    		System.out.println("2) Dodaj novog dispecera");
+    		System.out.println("3) Obrisi dispecera");
+    		System.out.println("0) Nazad \n");
+    		
+    		cmd = PomocnaKlasa.ocitajCeoBroj();
+    		
+    		switch (cmd) {
+	    		case 0: 
+	    			System.out.println("Dovi\u0111enja...");
+	    			break;
+	    		case 1: 
+	    			showAllDispatchers();
+	    			editDispatcher();
+	    			break;
+	    		case 2: 
+	    			addNewDispatcher();
+	    			break;
+	    		case 3:
+	    			showAllDispatchers();
+	    			deleteDispatcher();
+	    			break;
+	    		
+	    		default:
+	    			System.out.println("Gre\u0161ka, nepoznata komanda: " +cmd);
+    		}
+    		    		
+    	}
+    	input.close();
+    }
+    
+    public static void showDispatcherMenu(JFrame frame) {
+    	
+    	int cmd = -1;
+    	while (cmd != 0) {
+    		
+    		System.out.println("\n---------------------------------");
+    		System.out.println("1) Taxi sluzba - prikaz i izmena");
+    		System.out.println("2) Pretraga");
+    		System.out.println("3) Automobili");
+    		System.out.println("4) Vozaci");
+    		System.out.println("5) Voznje");
+    		System.out.println("6) Izvestaji");
+    		System.out.println("7) Dispeceri");
+    		System.out.println("0) Izlaz \n");
+    		
+    		cmd = PomocnaKlasa.ocitajCeoBroj();
+    		
+    		switch (cmd) {
+	    		case 0: 
+	    			System.out.println("Dovi\u0111enja...");
+	    			frame.dispose();
+	    			break;
+	    		case 1: 
+	    			System.out.println("Nije u funkciji za kt2");
+	    			break;
+	    		case 2: 
+	    			System.out.println("Nije u funkciji za kt2");
+	    			break;
+	    		case 3: 
+	    			System.out.println("Nije u funkciji za kt2");
+	    			break;
+	    		case 4: 
+	    			Driver.driverCRUDMenu();
+	    			break;
+	    		case 5:
+	    			
+	    			break;
+	    		case 6:
+	    			System.out.println("Nije u funkciji za kt2");
+	    			break;
+	    		case 7:
+	    			dispatcherCRUDMenu();
+	    			break;
+	    		
+	    		default:
+	    			System.out.println("Gre\u0161ka, nepoznata komanda: " +cmd);
+    		}
+    		    		
+    	}
+    }
+    
+    
+
+
+	// GETTERS & SETTERS
     
     public ArrayList<Dispatcher> getAllDispatchers() {
 		return allDispatchers;
 	}
 
-	public void setAllDispatchers(ArrayList<Dispatcher> allDispatchers) {
-		this.allDispatchers = allDispatchers;
-	}
-	
-    public int getId() {
-    	return id;
-    }
     
-    public void setId(int id) {
-    	this.id = id;
-    }
     
 	public int getPhoneLineNum() {
 		return phoneLineNum;
@@ -73,12 +256,8 @@ public class Dispatcher extends Employee implements CRUDOps {
 				+ ", gender=" + gender + ", phoneNum=" + phoneNum + ", address=" + address + "]";
 	}
 
-	private int id;
-
-	private int phoneLineNum;
-
-    private Department dept;
-
+	
+/*
     private void addDriver() {
         // TODO implement here
         return;
@@ -138,51 +317,15 @@ public class Dispatcher extends Employee implements CRUDOps {
         // TODO implement here
         return;
     }
+*/    
     
-    
-    public void showAll() {
-    	for (Dispatcher d : allDispatchers) {
-    		System.out.println(d);
-    	}
-    }
-    public void addNew() {
-    	Scanner sc = new Scanner(System.in);
-	    	System.out.println("Postavite korisnicko ime >> ");
-		    	String username = sc.nextLine();
-	    	System.out.println("Postavite lozinku >> ");
-		    	String password = sc.nextLine();
-	    	System.out.println("Ime >> ");
-		    	String name = sc.nextLine();
-	    	System.out.println("Prezime >> ");
-		    	String lastName = sc.nextLine();
-	    	System.out.println("JMBG >> ");
-		    	int jmbg = Integer.parseInt(sc.nextLine());
-	    	System.out.println("Pol [0 - ZENSKI   1 - MUSKI] >> ");
-		    	int g = Integer.parseInt(sc.nextLine());
-		    	Gender gender = Gender.values()[g];
-	    	System.out.println("Telefon >> ");
-		    	String phone = sc.nextLine();
-	    	System.out.println("Adresa >> ");
-		    	String address = sc.nextLine();
-	    	System.out.println("Plata >> ");
-	    		double salary = Double.parseDouble(sc.nextLine());
-			System.out.println("Broj telefonske linije >> ");
-				int phoneLineNum = Integer.parseInt(sc.nextLine());
-			System.out.println("Odeljenje na kom radi [0 - ZALBE    1 - PORUCIVANJE VOZNJI >> ");
-				int d = Integer.parseInt(sc.nextLine());
-				Department department = Department.values()[d];
-    	sc.close();
-    	
-    	allDispatchers.add(new Dispatcher(id, username, password, name, lastName, jmbg, gender, phone, address, salary, phoneLineNum, department));
-    	
-    }
     
     
     // FILE IO
     
     public void loadInDispatchers(String filename) {
     	
-    	String sp = System.getProperty(File.separator);
+    	String sp = System.getProperty("file.separator");
     	
 		try {
 			File file = new File("src" + sp + "dataFiles" + sp + filename);
@@ -194,20 +337,20 @@ public class Dispatcher extends Employee implements CRUDOps {
 				
 				String[] split = row.split("\\|");
 				
-				int id = Integer.parseInt(split[0]);
-				String username = split[1];
-				String password = split[2];
-				String name= split[3];
-				String lastName= split[4];
-				int jmbg = Integer.parseInt(split[5]);
-				Gender gender = Gender.values()[Integer.parseInt(split[6])];
-				String phoneNum = split[7];
-				String address = split[8];
-				double salary = Double.parseDouble(split[9]);
-				int phoneLineNum = Integer.parseInt(split[10]);
-				Department dept = Department.values()[Integer.parseInt(split[11])];
+				String username = split[0];
+				String password = split[1];
+				String name= split[2];
+				String lastName= split[3];
+				int jmbg = Integer.parseInt(split[4]);
+				Gender gender = Gender.values()[Integer.parseInt(split[5])];
+				String phoneNum = split[6];
+				String address = split[7];
+				double salary = Double.parseDouble(split[8]);
+				int phoneLineNum = Integer.parseInt(split[9]);
+				Department dept = Department.values()[Integer.parseInt(split[10])];
+				boolean deleted = Boolean.parseBoolean(split[11]);
 				
-				Dispatcher dispatcher = new Dispatcher(id, username, password, name, lastName, jmbg, gender, phoneNum, address, salary, phoneLineNum, dept);
+				Dispatcher dispatcher = new Dispatcher(username, password, name, lastName, jmbg, gender, phoneNum, address, salary, phoneLineNum, dept, deleted);
 				allDispatchers.add(dispatcher);
 				
 			}
@@ -219,17 +362,17 @@ public class Dispatcher extends Employee implements CRUDOps {
 	}
     
     
-    public void saveDispatchers(String filename) {
+    public static void saveDispatchers(String filename) {
     	
-    	String sp = System.getProperty(File.separator);
+    	String sp = System.getProperty("file.separator");
     	
 		try {
 			File file = new File("src" + sp + "dataFiles" + sp + filename);
 
 			String content = "";
 			for (Dispatcher dp: allDispatchers) {
-				content += dp.getId() + "|" + dp.getUsername() + "|" + dp.getPassword() + "|" + dp.getName() + "|" + dp.getLastName()+ "|" + dp.getJmbg() + "|"
-						+ dp.getGender() + "|" + dp.getPhoneNum() + "|" + dp.getAddress() + "|" + dp.getSalary() + "|" + dp.getPhoneLineNum() + "|" + dp.getDept() +"\n";
+				content += dp.getUsername() + "|" + dp.getPassword() + "|" + dp.getName() + "|" + dp.getLastName()+ "|" + dp.getJmbg() + "|"
+						+ dp.getGender() + "|" + dp.getPhoneNum() + "|" + dp.getAddress() + "|" + dp.getSalary() + "|" + dp.getPhoneLineNum() + "|" + dp.getDept() + "|" + dp.isDeleted() +"\n";
 			}
 			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
 			writer.write(content);
