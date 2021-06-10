@@ -25,7 +25,7 @@ import entities.Driver;
 
 public class LoginUI extends JFrame {
 	
-	private JLabel userLabel = new JLabel("Korisnièko ime:");
+	private JLabel userLabel = new JLabel("Korisni\u010Dko ime:");
 	private JTextField userText = new JTextField();
 	private JLabel passwordLabel = new JLabel("Lozinka:");
 	private JPasswordField passwordText = new JPasswordField();
@@ -122,12 +122,12 @@ public class LoginUI extends JFrame {
 					for (String l : niz) {
 						if (user.equals(l) && pass.equals(l)) {
 							
-							success.setText("Login successful !");
-							frame.setVisible(false);
+							success.setText("Prijava uspešna !");
+//							frame.setVisible(false);
 							//Driver.showDriverMenu();
-							Dispatcher.showDispatcherMenu(frame);
+//							Dispatcher.showDispatcherMenu(frame);
 							// Customer.showCustomerMenu();
-							frame.setVisible(false);
+//							frame.setVisible(false);
 							found = true;
 							
 							break;
@@ -135,7 +135,7 @@ public class LoginUI extends JFrame {
 					}
 							
 					if (found == false) 
-							JOptionPane.showMessageDialog (null, "Neispravno korisnièko ime ili lozinka!", "Greška", JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog (null, "Neispravno korisni\u010Dko ime ili lozinka!", "Greška", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});

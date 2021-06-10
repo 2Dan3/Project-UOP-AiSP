@@ -10,10 +10,10 @@ import java.util.*;
 
 import javax.swing.JFrame;
 
-public class Dispatcher extends Employee {
+public class Dispatcher extends Employee { 
 
 	static ArrayList<Dispatcher> allDispatchers = new ArrayList<Dispatcher>();
-	private int phoneLineNum;
+	private String phoneLineNum;
     private Department dept;
     
     public Dispatcher() {
@@ -24,8 +24,8 @@ public class Dispatcher extends Employee {
     }
     
     
-    public Dispatcher(String username, String password, String name, String lastName, int jmbg, Gender gender,
-    		String phone, String address, double salary, int phoneLineNum, Department department, boolean deleted) {
+    public Dispatcher(String username, String password, String name, String lastName, String jmbg, Gender gender,
+    		String phone, String address, double salary, String phoneLineNum, Department department, boolean deleted) {
 		super(username, password, name, lastName, jmbg, gender, phone, address, salary, deleted);
 
 		this.phoneLineNum = phoneLineNum;
@@ -52,7 +52,7 @@ public class Dispatcher extends Employee {
 	    	System.out.println("Prezime >> ");
 		    	String lastName = sc.nextLine();
 	    	System.out.println("JMBG >> ");
-		    	int jmbg = Integer.parseInt(sc.nextLine());
+		    	String jmbg = sc.nextLine();
 	    	System.out.println("Pol [0 - ZENSKI   1 - MUSKI] >> ");
 		    	int g = Integer.parseInt(sc.nextLine());
 		    	Gender gender = Gender.values()[g];
@@ -63,7 +63,7 @@ public class Dispatcher extends Employee {
 	    	System.out.println("Plata >> ");
 	    		double salary = Double.parseDouble(sc.nextLine());
 			System.out.println("Broj telefonske linije >> ");
-				int phoneLineNum = Integer.parseInt(sc.nextLine());
+				String phoneLineNum = sc.nextLine();
 			System.out.println("Odeljenje na kom radi [0 - REKLAMACIJE    1 - PORUCIVANJE VOZNJI] >> ");
 				int d = Integer.parseInt(sc.nextLine());
 				Department department = Department.values()[d];
@@ -71,17 +71,17 @@ public class Dispatcher extends Employee {
     	sc.close();
     	
     	allDispatchers.add(new Dispatcher(username, password, name, lastName, jmbg, gender, phone, address, salary, phoneLineNum, department, deleted));
-    	
+    	saveDispatchers("Dispatchers.csv");
     }
     
     public static void editDispatcher() {
 		System.out.println("Izmeniti dispecera [JMBG] >> ");
 		
 		Scanner sc = new Scanner(System.in);
-		int jmbg = Integer.parseInt(sc.nextLine());
+		String jmbg = sc.nextLine();
 		
     	for (int i = 0; i < allDispatchers.size(); i++) {
-			if (allDispatchers.get(i).getJmbg() == jmbg && !allDispatchers.get(i).isDeleted() ) {
+			if (allDispatchers.get(i).getJmbg().equals(jmbg) && !allDispatchers.get(i).isDeleted() ) {
 				
 				Dispatcher thisDispatcher = allDispatchers.get(i);
 				
@@ -117,10 +117,10 @@ public class Dispatcher extends Employee {
     	System.out.println("Obrisati dispecera [JMBG] >> ");
 		
 		Scanner sc = new Scanner(System.in);
-		int jmbg = Integer.parseInt(sc.nextLine());
+		String jmbg = sc.nextLine();
 		
     	for (int i = 0; i < allDispatchers.size(); i++) {
-			if (allDispatchers.get(i).getJmbg() == jmbg && !allDispatchers.get(i).isDeleted() ) {
+			if (allDispatchers.get(i).getJmbg().equals(jmbg) && !allDispatchers.get(i).isDeleted() ) {
 				allDispatchers.get(i).setDeleted(true);
 				saveDispatchers("Dispatchers.csv");
 				break;
@@ -218,23 +218,31 @@ public class Dispatcher extends Employee {
     	}
     }
     
+    public static ArrayList<Dispatcher> listActiveDispatchers() {
+    	
+		ArrayList<Dispatcher> dispatcherList = new ArrayList<Dispatcher>();
+    	return dispatcherList;
+    }
     
 
 
 	// GETTERS & SETTERS
-    
-    public ArrayList<Dispatcher> getAllDispatchers() {
+    //TODO
+    public static ArrayList<Dispatcher> getAllDispatchers() {
+    	allDispatchers.add(new Dispatcher("mirkoM","lozinka123","Mirko","Mirkovic","1102996800098",Gender.MUSKI,"064112361","Bul.Cara Lazara 82",65000.05,"022333",Department.REQUESTS,false));
+    	allDispatchers.add(new Dispatcher("srdjanP","lozinka777","Srdjan","Popovic","2308998806178",Gender.MUSKI,"064127885","Cara Dusana 22",54030.07,"022333",Department.REQUESTS,false));
+    	allDispatchers.add(new Dispatcher("lukaP","lozinka182","Luka","Pavlov","0707000100021",Gender.MUSKI,"0634576951","Bul.Evrope 102",71003.09,"022333",Department.REQUESTS,false));
 		return allDispatchers;
 	}
 
     
     
-	public int getPhoneLineNum() {
+	public String getPhoneLineNum() {
 		return phoneLineNum;
 	}
 
 
-	public void setPhoneLineNum(int phoneLineNum) {
+	public void setPhoneLineNum(String phoneLineNum) {
 		this.phoneLineNum = phoneLineNum;
 	}
 
@@ -341,7 +349,7 @@ public class Dispatcher extends Employee {
 				String password = split[1];
 				String name= split[2];
 				String lastName= split[3];
-				int jmbg = Integer.parseInt(split[4]);
+				String jmbg = split[4];
 				Gender gender = Gender.values()[Integer.parseInt(split[5])];
 				String phoneNum = split[6];
 				String address = split[7];

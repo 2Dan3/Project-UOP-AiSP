@@ -2,7 +2,7 @@ package entities;
 
 import java.util.*;
 
-public abstract class TaxiService {
+public class TaxiService {
 
     private static int taxIdNum;
 
