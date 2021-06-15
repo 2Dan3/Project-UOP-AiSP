@@ -22,7 +22,7 @@ public class Driver extends Employee {
 		this.driverStatus = DriverStatus.NONACTIVE;
     }
     
-    public Driver(String username, String password, String name, String lastName, String jmbg, Gender gender,
+    public Driver(String username, String password, String name, String lastName, long jmbg, Gender gender,
 			String phoneNum, String address, String membershipCardNum, Vehicle vehicle, DriverStatus driverStatus, double salary, boolean deleted) {
 		super(username, password, name, lastName, jmbg, gender,
 				 phoneNum, address, salary, deleted);
@@ -133,7 +133,7 @@ public class Driver extends Employee {
 	    	System.out.println("Prezime >> ");
 		    	String lastName = sc.nextLine();
 	    	System.out.println("JMBG >> ");
-		    	String jmbg = sc.nextLine();
+		    	long jmbg = Long.parseLong(sc.nextLine());
 	    	System.out.println("Pol [0 - ZENSKI   1 - MUSKI] >> ");
 		    	int g = Integer.parseInt(sc.nextLine());
 		    	Gender gender = Gender.values()[g];
@@ -324,7 +324,7 @@ public class Driver extends Employee {
 				String password = split[1];
 				String name= split[2];
 				String lastName= split[3];
-				String jmbg = split[4];
+				long jmbg = Long.parseLong(split[4]);
 				Gender gender = Gender.values()[Integer.parseInt(split[5])];
 				String phoneNum = split[6];
 				String address = split[7];

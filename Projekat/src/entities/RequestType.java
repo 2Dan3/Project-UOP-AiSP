@@ -1,6 +1,6 @@
 package entities;
 
 public enum RequestType {
-    PHONE,
+    TEL,
     APP
 }

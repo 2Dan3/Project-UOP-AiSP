@@ -18,6 +18,7 @@ import javax.swing.JTextField;
 import entities.Department;
 import entities.Dispatcher;
 import entities.Gender;
+import entities.ValidatorClass;
 
 
 public class DispatcherDataForm extends JFrame {
@@ -51,17 +52,17 @@ public class DispatcherDataForm extends JFrame {
 	
 	//TODO private TaxiService taxiSvc;
 	//TODO 
-	private Dispatcher dispatcher = new Dispatcher("srdjanP","lozinka777","Srdjan","Popovic","2308998806178",Gender.MUSKI,"064127885","Cara Dusana 22",54030.07,"022333",Department.REQUESTS,false);
+	private Dispatcher dispatcher;
 	
 					// TaxiService taxiSvc, Dispatcher dispatcher
-	public DispatcherDataForm() {
+	public DispatcherDataForm(Dispatcher dispatcher) {
 //		this.taxiSvc = taxiSvc;
-//		this.dispatcher = dispatcher;
-/*		if(dispatcher == null) {
+		this.dispatcher = dispatcher;
+		if(dispatcher == null) {
 			setTitle("Dodavanje dispe\u010Dera");
 		}else {
 			setTitle("Izmena podataka - " + dispatcher.getUsername());
-		}*/
+		}
 		
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		setSize(screenSize.width / 5, (int)(screenSize.height / 2.5));
@@ -77,18 +78,20 @@ public class DispatcherDataForm extends JFrame {
 
 	private void initGUI() {
 		// TODO Auto-generated method stub
-		/*if(dispatcher != null) {*/
+		if(dispatcher != null) {
 			fillInTextFieldValues();
 			txtJmbg.setBackground(Color.LIGHT_GRAY);
 			txtJmbg.setDisabledTextColor(Color.black);
 			//TODO remove this custom jmbg
-			txtJmbg.setText("2312001800026");
 			txtJmbg.setEnabled(false);
-		/*}*/
+		}
+		
 		GridLayout layout = new GridLayout(13, 2, 5, 5);
 		setLayout(layout);
 		
 		txtJmbg.setFont(new Font("", Font.ITALIC, 12));
+		
+		getRootPane().setDefaultButton(btnSave);
 		
 		add(lblUsername);
 		add(txtUsername);
@@ -125,20 +128,24 @@ public class DispatcherDataForm extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				/* TODO if (validate()) {*/
+				/* TODO if (ValidatorClass.validateFields()) {*/
+				
+				//TODO pozivi funkcije PomocnaKlasa.capitalize();
 					String username = txtUsername.getText().trim();
 					String pass = new String(txtPass.getPassword());
-					String name = txtName.getText().trim();
-					String lastName = txtLastName.getText().trim();
-					String jmbg = txtJmbg.getText().trim();
+					String name = ValidatorClass.capitalize( txtName.getText().trim() );
+					String lastName = ValidatorClass.capitalize( txtLastName.getText().trim() );
+					long jmbg = Long.parseLong(txtJmbg.getText().trim());
 					Gender gen = (Gender)genderCBox.getSelectedItem();
 					String ph = txtPhone.getText().trim();
-					String address = txtAddress.getText().trim();
+					String address = ValidatorClass.capitalize( txtAddress.getText().trim() );
 					String phLnNum = txtPhoneLineNum.getText().trim();
 					double salary = Double.parseDouble(txtSalary.getText().trim());
 					Department dept = (Department)departmentCBox.getSelectedItem();
 					
-					if(dispatcher != null) { // EDITING obj:
+					if (ValidatorClass.validateFields(username, pass, name, lastName, jmbg, ph, address) == 0) {
+						
+						if(dispatcher != null) { // EDITING obj:
 						dispatcher.setUsername(username);
 						dispatcher.setPassword(pass);
 						dispatcher.setName(name);
@@ -152,15 +159,18 @@ public class DispatcherDataForm extends JFrame {
 						dispatcher.setDept(dept);
 					}else { // ADDING obj:
 						Dispatcher newDisp = new Dispatcher(username, pass, name, lastName, jmbg, gen, ph, address, salary, phLnNum, dept, false);
-						//TODO uncomment: taxiSvc.addDispatcher(newDisp);
+						//TODO uncomment: 
+						Dispatcher.addNew(newDisp);
 					}
 					
-					//TODO uncomment: taxiSvc.saveDispatchers(ProdavnicaMain.PRODAVCI_FAJL);
+					//TODO uncomment: 
+					Dispatcher.saveDispatchers("Dispatchers.csv");
 					DispatcherDataForm.this.dispose();
 					DispatcherDataForm.this.setVisible(false);
-				/*}*/
-			}
+					//TODO uncomment kad nadjem nacin da radi odavde: refreshWindow();
+			}		}
 		});
+		
 		
 		btnCancel.addActionListener(new ActionListener() {
 			@Override
@@ -178,7 +188,7 @@ public class DispatcherDataForm extends JFrame {
 			txtPass.setText(dispatcher.getPassword());
 			txtName.setText(dispatcher.getName());
 			txtLastName.setText(dispatcher.getLastName());
-			txtJmbg.setText(dispatcher.getJmbg());
+			txtJmbg.setText(String.valueOf(dispatcher.getJmbg()));
 			genderCBox.setSelectedItem(dispatcher.getGender());
 			txtPhone.setText(dispatcher.getPhoneNum());
 			txtAddress.setText(dispatcher.getAddress());

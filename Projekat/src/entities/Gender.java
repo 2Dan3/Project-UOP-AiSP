@@ -1,6 +1,6 @@
 package entities;
 
 public enum Gender {
-    MUSKI,
-    ZENSKI
+    MU\u0160KI,
+    \u017DENSKI
 }

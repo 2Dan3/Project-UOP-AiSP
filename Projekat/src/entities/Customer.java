@@ -16,7 +16,7 @@ public class Customer extends User {
     	super();
     }
     
-    public Customer(String username, String password, String name, String lastName, int jmbg, Gender gender,
+    public Customer(String username, String password, String name, String lastName, long jmbg, Gender gender,
 			String phoneNum, String address, boolean deleted) {
     	super( username, password, name, lastName, jmbg, gender,
     		 phoneNum, address, deleted);
@@ -117,7 +117,7 @@ public class Customer extends User {
 				String password = split[1];
 				String name= split[2];
 				String lastName= split[3];
-				int jmbg = Integer.parseInt(split[4]);
+				long jmbg = Long.parseLong(split[4]);
 				Gender gender = Gender.values()[Integer.parseInt(split[5])];
 				String phoneNum = split[6];
 				String address = split[7];

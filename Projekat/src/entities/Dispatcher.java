@@ -19,12 +19,12 @@ public class Dispatcher extends Employee {
     public Dispatcher() {
     	super();
     	
-		this.phoneLineNum = 0;
-		this.dept = Department.REQUESTS;
+		this.phoneLineNum = "";
+		this.dept = Department.values()[0];
     }
     
     
-    public Dispatcher(String username, String password, String name, String lastName, String jmbg, Gender gender,
+    public Dispatcher(String username, String password, String name, String lastName, long jmbg, Gender gender,
     		String phone, String address, double salary, String phoneLineNum, Department department, boolean deleted) {
 		super(username, password, name, lastName, jmbg, gender, phone, address, salary, deleted);
 
@@ -52,7 +52,7 @@ public class Dispatcher extends Employee {
 	    	System.out.println("Prezime >> ");
 		    	String lastName = sc.nextLine();
 	    	System.out.println("JMBG >> ");
-		    	String jmbg = sc.nextLine();
+	    		long jmbg = Long.parseLong(sc.nextLine());
 	    	System.out.println("Pol [0 - ZENSKI   1 - MUSKI] >> ");
 		    	int g = Integer.parseInt(sc.nextLine());
 		    	Gender gender = Gender.values()[g];
@@ -74,7 +74,7 @@ public class Dispatcher extends Employee {
     	saveDispatchers("Dispatchers.csv");
     }
     
-    public static void editDispatcher() {
+   /* public static void editDispatcher() {
 		System.out.println("Izmeniti dispecera [JMBG] >> ");
 		
 		Scanner sc = new Scanner(System.in);
@@ -102,7 +102,7 @@ public class Dispatcher extends Employee {
 		    	System.out.println("Plata >> ");
 		    		thisDispatcher.setSalary(Double.parseDouble(sc.nextLine()));
 		    	System.out.println("Broj telefonske linije >> ");
-		    		thisDispatcher.setPhoneLineNum(Integer.parseInt(sc.nextLine()));
+		    		thisDispatcher.setPhoneLineNum(sc.nextLine());
 		    	System.out.println("Odeljenje na kom radi [0 - REKLAMACIJE    1 - PORUCIVANJE VOZNJI] >> ");
 		    		thisDispatcher.setDept(Department.values()[Integer.parseInt(sc.nextLine())]);
 				
@@ -125,7 +125,7 @@ public class Dispatcher extends Employee {
 				saveDispatchers("Dispatchers.csv");
 				break;
 			}
-		}
+		}sc.close();
 	}
     
 
@@ -216,6 +216,10 @@ public class Dispatcher extends Employee {
     		}
     		    		
     	}
+    }*/
+    
+    public static void addNew(Dispatcher dp) {
+    	allDispatchers.add(dp);
     }
     
     public static ArrayList<Dispatcher> listActiveDispatchers() {
@@ -224,15 +228,30 @@ public class Dispatcher extends Employee {
     	return dispatcherList;
     }
     
+    public static ArrayList<Dispatcher> getNonDeletedDispatchers() {
+    	
+		ArrayList<Dispatcher> allDpList = Dispatcher.loadInDispatchers("Dispatchers.csv");
+		Iterator<Dispatcher> iter = allDpList.iterator();
+
+		while (iter.hasNext()) {
+		    Dispatcher dp = iter.next();
+
+		    if (dp.isDeleted())
+		        iter.remove();
+		}
+		return allDpList;
+	}
+    
 
 
 	// GETTERS & SETTERS
     //TODO
     public static ArrayList<Dispatcher> getAllDispatchers() {
-    	allDispatchers.add(new Dispatcher("mirkoM","lozinka123","Mirko","Mirkovic","1102996800098",Gender.MUSKI,"064112361","Bul.Cara Lazara 82",65000.05,"022333",Department.REQUESTS,false));
-    	allDispatchers.add(new Dispatcher("srdjanP","lozinka777","Srdjan","Popovic","2308998806178",Gender.MUSKI,"064127885","Cara Dusana 22",54030.07,"022333",Department.REQUESTS,false));
-    	allDispatchers.add(new Dispatcher("lukaP","lozinka182","Luka","Pavlov","0707000100021",Gender.MUSKI,"0634576951","Bul.Evrope 102",71003.09,"022333",Department.REQUESTS,false));
-		return allDispatchers;
+    	/*allDispatchers.clear();
+    	allDispatchers.add(new Dispatcher("mirkoM","lozinka123","Mirko","Mirkovic",1102996800,Gender.MUSKI,"064112361","Bul.Cara Lazara 82",65000.05,"022333",Department.REQUESTS,false));
+    	allDispatchers.add(new Dispatcher("srdjanP","lozinka777","Srdjan","Popovic",1308998806,Gender.MUSKI,"064127885","Cara Dusana 22",54030.07,"022333",Department.REQUESTS,false));
+    	allDispatchers.add(new Dispatcher("lukaP","lozinka182","Luka","Pavlov",0707000100,Gender.MUSKI,"0634576951","Bul.Evrope 102",71003.09,"022333",Department.REQUESTS,false));
+		*/return allDispatchers;
 	}
 
     
@@ -330,9 +349,10 @@ public class Dispatcher extends Employee {
     
     
     // FILE IO
-    
-    public void loadInDispatchers(String filename) {
-    	
+	
+    //TODO Changed to static, replaced void, testing fileOutput
+    public static ArrayList<Dispatcher> loadInDispatchers(String filename) {
+    	allDispatchers.clear();
     	String sp = System.getProperty("file.separator");
     	
 		try {
@@ -349,24 +369,25 @@ public class Dispatcher extends Employee {
 				String password = split[1];
 				String name= split[2];
 				String lastName= split[3];
-				String jmbg = split[4];
+				long jmbg = Long.parseLong(split[4]);
 				Gender gender = Gender.values()[Integer.parseInt(split[5])];
 				String phoneNum = split[6];
 				String address = split[7];
 				double salary = Double.parseDouble(split[8]);
-				int phoneLineNum = Integer.parseInt(split[9]);
+				String phoneLineNum = split[9];
 				Department dept = Department.values()[Integer.parseInt(split[10])];
 				boolean deleted = Boolean.parseBoolean(split[11]);
 				
 				Dispatcher dispatcher = new Dispatcher(username, password, name, lastName, jmbg, gender, phoneNum, address, salary, phoneLineNum, dept, deleted);
 				allDispatchers.add(dispatcher);
-				
+				System.out.println(allDispatchers);
 			}
 			reader.close();
 		} catch (IOException e) {
-			System.out.println("Greska prilikom citanja podataka o dispecerima.");
+			System.out.println("Gre\u0161ka prilikom \u010Ditanja podataka o dispe\u010Derima.");
 			e.printStackTrace();
 		}
+		return allDispatchers;
 	}
     
     
@@ -380,14 +401,14 @@ public class Dispatcher extends Employee {
 			String content = "";
 			for (Dispatcher dp: allDispatchers) {
 				content += dp.getUsername() + "|" + dp.getPassword() + "|" + dp.getName() + "|" + dp.getLastName()+ "|" + dp.getJmbg() + "|"
-						+ dp.getGender() + "|" + dp.getPhoneNum() + "|" + dp.getAddress() + "|" + dp.getSalary() + "|" + dp.getPhoneLineNum() + "|" + dp.getDept() + "|" + dp.isDeleted() +"\n";
+						+ dp.getGender().ordinal() + "|" + dp.getPhoneNum() + "|" + dp.getAddress() + "|" + dp.getSalary() + "|" + dp.getPhoneLineNum() + "|" + dp.getDept().ordinal() + "|" + dp.isDeleted() +"\n";
 			}
 			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
 			writer.write(content);
 			writer.close();
 			
 		} catch (IOException e) {
-			System.out.println("Greska prilikom upisivanja dispecera.");
+			System.out.println("Gre\u0161ka prilikom upisivanja dispe\u010Dera.");
 		}
 	}
 

@@ -1,7 +1,7 @@
 package ui;
 
 public enum Roles {
-	MUŠTERIJA,
-	VOZA\u010D,
-	DISPE\u010DER
+	MU\u0160TERIJA,
+	VOZA\u010c,
+	DISPE\u010cER
 }

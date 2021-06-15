@@ -12,7 +12,7 @@ public abstract class User {
 
     protected String lastName;
 
-    protected String jmbg;
+    protected long jmbg;
 
     protected Gender gender;
 
@@ -29,14 +29,14 @@ public abstract class User {
 		this.password = "";
 		this.name = "";
 		this.lastName = "";
-		this.jmbg = "";
-		this.gender = Gender.MUSKI;
+		this.jmbg = 1000000000;
+		this.gender = Gender.values()[0];
 		this.phoneNum = "";
 		this.address = "";
 		this.deleted = false;
     }
     
-    public User(String username, String password, String name, String lastName, String jmbg, Gender gender,
+    public User(String username, String password, String name, String lastName, long jmbg, Gender gender,
 			String phoneNum, String address, boolean deleted) {
 		super();
 		this.username = username;
@@ -102,13 +102,13 @@ public abstract class User {
 
 
 
-	public String getJmbg() {
+	public long getJmbg() {
 		return jmbg;
 	}
 
 
 
-	public void setJmbg(String jmbg) {
+	public void setJmbg(long jmbg) {
 		this.jmbg = jmbg;
 	}
 

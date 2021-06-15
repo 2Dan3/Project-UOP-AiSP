@@ -20,6 +20,7 @@ import javax.swing.JTextField;
 
 import entities.Dispatcher;
 import entities.Driver;
+import uiMainWindows.DispatcherMainWindow;
 
 //import entities.Roles;
 
@@ -30,34 +31,24 @@ public class LoginUI extends JFrame {
 	private JLabel passwordLabel = new JLabel("Lozinka:");
 	private JPasswordField passwordText = new JPasswordField();
 	private JButton loginButton = new JButton("Prijavi me");
-	private JLabel success;
 	private String[] niz = new String[] {"Dimi","Dan"};
 	private JComboBox<Roles> rolesComboBox = new JComboBox<Roles>(Roles.values());
-	
-	JPanel panel;
-	JFrame frame;
+	private JLabel success = new JLabel();
 	
 	
 	public LoginUI () {
 		
-		panel = new JPanel();
-		
-		frame = new JFrame();
+	
 		
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
 		Dimension screenSize = toolkit.getScreenSize();
 		
-		frame.setSize(screenSize.width / 4, screenSize.height / 5);
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		frame.add(panel);
-		frame.setTitle("Prijava na sistem");
-		frame.setLocationRelativeTo (null);
-		frame.setResizable (false);
-		
-		panel.setLayout(null);
-		success = new JLabel();
-		success.setBounds(10,110,300,25);
-		panel.add(success);
+		setSize(screenSize.width / 4, screenSize.height / 5);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setTitle("Prijava na sistem");
+		setLocationRelativeTo (null);
+		setResizable(false);	
+		setLayout(null);
 		
 		initGUI();
 		initActions();
@@ -66,29 +57,34 @@ public class LoginUI extends JFrame {
 	}
 		
 		public void initGUI() {
-		
+			
+			success.setBounds(10,140,300,25);
+			add(success);
+			
 			userLabel.setBounds(15, 20, 90, 25);
-			panel.add(userLabel);
+			add(userLabel);
 			
 			userText.setBounds(130, 20, 165, 25);
 			userText.setBackground(Color.lightGray);
-			panel.add(userText);
+			add(userText);
 			
 			passwordLabel.setBounds(15, 60, 90, 25);
-			panel.add(passwordLabel);
+			add(passwordLabel);
 			
 			passwordText.setBounds(130, 60, 165, 25);
 			passwordText.setBackground(Color.lightGray);
-			panel.add(passwordText);
+			add(passwordText);
 			
 			rolesComboBox.setBounds(15, 95, 100, 25);
-			panel.add(rolesComboBox);
+			add(rolesComboBox);
 			
 			loginButton.setBounds(130, 95, 100, 25);
 			loginButton.setBackground(Color.blue);
 			loginButton.setForeground(Color.white);
 			loginButton.setFont(new Font("", Font.BOLD, 12));
-			panel.add(loginButton);			
+			add(loginButton);
+			
+			getRootPane().setDefaultButton(loginButton);
 						
 	
 		}
@@ -99,7 +95,7 @@ public class LoginUI extends JFrame {
 		// TODO Auto-generated method stub
 
 		LoginUI loginUI = new LoginUI();
-		loginUI.frame.setVisible(true);
+		loginUI.setVisible(true);
 		
 		
 		
@@ -112,17 +108,50 @@ public class LoginUI extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				String user = userText.getText();
-				String pass = passwordText.getText();
+				String username = userText.getText().trim();
+				String pass = new String(passwordText.getPassword());
 				boolean found = false;
 				
-				if (user.equals("") || pass.equals(""))
-					JOptionPane.showMessageDialog (null, "Molimo, unesite sve podatke!", "Pažnja", JOptionPane.WARNING_MESSAGE);
+				if (username.equals("") || pass.equals(""))
+					JOptionPane.showMessageDialog (null, "Molimo, unesite sve podatke!", "Pa\u017Enja", JOptionPane.WARNING_MESSAGE);
 				else {
-					for (String l : niz) {
-						if (user.equals(l) && pass.equals(l)) {
+					//TODO Uprostiti, staviti u Login funkciju u drugi fajl, zatim pozvati odavde :
+					  
+					if(rolesComboBox.getSelectedItem() == Roles.DISPEÈER) {//TODO videti zasto je error kod poziva Dispatcher.getNonDeletedDispatchers() ! ! ! 
+						for (Dispatcher user : Dispatcher.getNonDeletedDispatchers()) {
+							if(username.equals(user.getUsername()) && pass.equals(user.getPassword())) {
+								found = true;
+								DispatcherMainWindow dpMainWin = new DispatcherMainWindow(user);
+								dpMainWin.setVisible(true);
+								LoginUI.this.dispose();
+								LoginUI.this.setVisible(false);
+								break;
+							}
+						}
+						System.out.println(Dispatcher.getNonDeletedDispatchers());
+						System.out.println(Dispatcher.getAllDispatchers());
+					}/*else if(rolesComboBox.getSelectedItem() == Roles.VOZAÈ) {
+						for (Driver user : getAllDrivers()) {
+							if(user.equals(user.getUsername()) && pass.equals(user.getPassword())) {
+								found = true;
+								DriverMainWindow dpMainWin = new DriverMainWindow();
+							}
+						}
+					}else if(rolesComboBox.getSelectedItem() == Roles.MUŠTERIJA) {
+						for (Customer user : getAllCustomers()) {
+							if(user.equals(user.getUsername()) && pass.equals(user.getPassword())) {
+								found = true;
+								CustomerMainWindow dpMainWin = new CustomerMainWindow();
+							}
+						}
+					}*/
+					
+					
+					
+					/*for (String l : niz) {
+						if (username.equals(l) && pass.equals(l)) {
 							
-							success.setText("Prijava uspešna !");
+							success.setText("Prijava :: uspe\u0161na !");
 //							frame.setVisible(false);
 							//Driver.showDriverMenu();
 //							Dispatcher.showDispatcherMenu(frame);
@@ -133,9 +162,9 @@ public class LoginUI extends JFrame {
 							break;
 						}
 					}
-							
+					*/		
 					if (found == false) 
-							JOptionPane.showMessageDialog (null, "Neispravno korisni\u010Dko ime ili lozinka!", "Greška", JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog (null, "Neispravno korisni\u010Dko ime ili lozinka!", "Gre\u0161ka", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});

@@ -6,6 +6,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
+import javax.swing.AbstractButton;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -31,11 +32,13 @@ import entities.Dispatcher;
 
 public class DispatcherMainWindow extends JFrame {
 	
-	TaxiService taxiSvc;
+	private Dispatcher currentDispatcher;
+	private TaxiService taxiSvc;
 	private JButton addBtn = new JButton();
 	private JButton editBtn = new JButton();
 	private JButton dltBtn = new JButton();
 	private JButton searchBtn = new JButton();
+	private JButton refreshBtn = new JButton();
 	
 	private JMenuBar mainMenu = new JMenuBar();
 	
@@ -48,16 +51,16 @@ public class DispatcherMainWindow extends JFrame {
 	private JMenuItem carsItem = new JMenuItem("Automobili");
 	private JMenuItem ridesItem = new JMenuItem("Vo\u017Enje");
 
-//JToolBar mainToolbar = new JToolBar();
-	JTable table;
-	DefaultTableModel tableModel;
+//JToolBar mainToolbar = new JToolBar(); //TODO made JTable & DefaultTableModel private
+	private JTable table;
+	private DefaultTableModel tableModel;
 	
 							//TaxiService taxiSvc
-	public DispatcherMainWindow() {
+	public DispatcherMainWindow(Dispatcher currentDispatcher) {
 		
 		//this.taxiSvc = taxiSvc;
-		
-		this.setTitle("Dispe\u010Der :: ");// + current_user/dispatch
+		this.currentDispatcher = currentDispatcher;
+		this.setTitle("Dispe\u010Der :: " + currentDispatcher.getUsername());// + current_user/dispatch
 		this.setSize(1100, 300);
 		this.setLocationRelativeTo(null);
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -99,6 +102,9 @@ public class DispatcherMainWindow extends JFrame {
 		ImageIcon searchIcon = new ImageIcon(getClass().getResource("/icons/search.gif"));
 		searchBtn.setIcon(searchIcon);
 		
+		ImageIcon refreshIcon = new ImageIcon(getClass().getResource("/icons/refresh.gif"));
+		refreshBtn.setIcon(refreshIcon);
+		
 		//TODO
 		/*addBtn.setSize(60, 20);
 		editBtn.setSize(60, 20);
@@ -111,6 +117,8 @@ public class DispatcherMainWindow extends JFrame {
 		buttonBox.add(dltBtn);
 		buttonBox.add(Box.createVerticalStrut(3));
 		buttonBox.add(searchBtn);
+		buttonBox.add(Box.createVerticalStrut(3));
+		buttonBox.add(refreshBtn);
 		/*mainToolbar.setFloatable(false);
 		mainToolbar.add(addBtn);
 		mainToolbar.add(editBtn);
@@ -120,15 +128,18 @@ public class DispatcherMainWindow extends JFrame {
 		this.add(buttonBox, BorderLayout.WEST);
 
 		//TODO taxiSvc.getAllDispatchers();
-		ArrayList<Dispatcher> dispatchers = Dispatcher.getAllDispatchers();
+		ArrayList<Dispatcher> ldispatchers = Dispatcher.getNonDeletedDispatchers();
 		
 		String[] tableHeader = new String[] {"Korisni\u010Dko ime","Lozinka","Ime","Prezime",
 				"JMBG","Pol","Telefon","Adresa","Br.Tel. linije","Odeljenje","Plata"};
 		
-		Object[][] tableData = new Object[dispatchers.size()][tableHeader.length];
+		Object[][] tableData = new Object[ldispatchers.size()][tableHeader.length];
 		
-		for (int i = 0; i < dispatchers.size(); i++) {
-			Dispatcher dp = dispatchers.get(i);
+		for (int i = 0; i < ldispatchers.size(); i++) {
+			//System.out.println(i);
+			//System.out.println(ldispatchers.size());
+			Dispatcher dp = ldispatchers.get(i);
+			
 			tableData[i][0] = dp.getUsername();
 			tableData[i][1] = dp.getPassword();
 			tableData[i][2] = dp.getName();
@@ -170,7 +181,7 @@ public class DispatcherMainWindow extends JFrame {
 		addBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				DispatcherDataForm ddf = new DispatcherDataForm();
+				DispatcherDataForm ddf = new DispatcherDataForm(null);
 				ddf.setVisible(true);
 				
 			}
@@ -181,47 +192,70 @@ public class DispatcherMainWindow extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				int row = table.getSelectedRow();
 				if(row == -1) {
-					JOptionPane.showMessageDialog(null, "Molimo, ozna\u010Dite red u tabeli!", "Pa\u017Enja", JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Molimo, pre izmene ozna\u010Dite red u tabeli!", "Pa\u017Enja", JOptionPane.WARNING_MESSAGE);
 				}else {
-					String jmbg = tableModel.getValueAt(row, 5).toString();
-					//Dispatcher dispatcher = taxiSvc.findDispatcher(jmbg);
-					/*if(dispatcher == null) {
+					long jmbg = (long) tableModel.getValueAt(row, 4);
+					Dispatcher dispatcher = TaxiService.findDispatcher(jmbg);
+					if(dispatcher == null) {
 						JOptionPane.showMessageDialog(null, "Dispe\u010Der sa tim JMBG nije prona\u0111en.", "Gre\u0161ka", JOptionPane.INFORMATION_MESSAGE);
 					}else {
-						*/DispatcherDataForm ddf = new DispatcherDataForm();
+						DispatcherDataForm ddf = new DispatcherDataForm(dispatcher);
 						ddf.setVisible(true);
 					}
 				}
 			}
-		);
+		});
 		dltBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int row = table.getSelectedRow();
 				if(row == -1) {
-					JOptionPane.showMessageDialog(null, "Molimo, ozna\u010Dite red u tabeli!", "Gre\u0161ka", JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Molimo, ozna\u010Dite red u tabeli!", "Gre\u0161ka", JOptionPane.WARNING_MESSAGE);
 				}else {
-					String jmbg = tableModel.getValueAt(row, 5).toString();
-					String username = tableModel.getValueAt(row, 1).toString();
-					Dispatcher dispatcher = taxiSvc.findDispatcher(jmbg);
-					
-					int confirmation = JOptionPane.showConfirmDialog(null, 
-							"Da li ste sigurni da \u017Eelite da obri\u0161ete dispe\u010Dera?", 
-							username + " - Porvrda brisanja", JOptionPane.YES_NO_OPTION);
-					
-					if(confirmation == JOptionPane.YES_OPTION) {
-						dispatcher.setDeleted(true);
-						tableModel.removeRow(row);
-						taxiSvc.saveDispatchers(TaxiService.PRODAVCI_FAJL);
+					long jmbg = (long) tableModel.getValueAt(row, 4);
+					String username = tableModel.getValueAt(row, 0).toString();
+					Dispatcher dispatcher = TaxiService.findDispatcher(jmbg);
+					if(dispatcher == null) {
+						JOptionPane.showMessageDialog(null, "Dispe\u016Der ne postoji ili je obrisan iz sistema.", "Nepostoje\u0107i dispe\u016Der", JOptionPane.INFORMATION_MESSAGE);
+					}
+					else {	
+						int confirmation = JOptionPane.showConfirmDialog(null, 
+								"Da li ste sigurni da \u017Eelite da obri\u0161ete dispe\u010Dera?", 
+								username + " - Potvrda brisanja", JOptionPane.YES_NO_OPTION);
+						
+						if(confirmation == JOptionPane.YES_OPTION) {
+							dispatcher.setDeleted(true);
+							//TODO da se iz fajla ne brise korisnik koji je logicki obrisan pri ponovnom snimanju iz liste tableModel.removeRow(row);
+							Dispatcher.saveDispatchers("Dispatchers.csv");
+							refreshWindow();
+						}
 					}
 				}
 			}
 		});
+		refreshBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				DispatcherMainWindow dpNewWin = new DispatcherMainWindow(currentDispatcher);
+				dpNewWin.setVisible(true);
+				//TODO check and move around if not working
+				DispatcherMainWindow.this.dispose();
+				DispatcherMainWindow.this.setVisible(false);
+				
+			}
+		});
+	}
+	
+	public JButton getRefreshBtn() {
+		return refreshBtn;
+	}
+	public void refreshWindow() {
+		refreshBtn.doClick(330);
 	}
 	
 	
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		DispatcherMainWindow dpWin = new DispatcherMainWindow();
 		dpWin.setVisible(true);
-	}
+	}*/
 }

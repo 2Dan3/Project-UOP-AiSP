@@ -15,6 +15,17 @@ public class TaxiService {
     private static double pricePerKm;
 
     
+	public static Dispatcher findDispatcher(long jmbG) {
+
+		for(Dispatcher dp : Dispatcher.allDispatchers) {
+			if (dp.getJmbg() == jmbG) {
+				return dp;
+			}
+		}
+		return null;
+	}
+
+    
     
     
 }
