@@ -1,6 +1,6 @@
 package entities;
 
 public enum VehicleType {
-    CAR,
-    VAN
+    AUTO,
+    KOMBI
 }

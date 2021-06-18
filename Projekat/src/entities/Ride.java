@@ -22,7 +22,7 @@ public class Ride {
     private RequestType requestType;
     private double startingPrice;
     private double pricePerKm;
-    private int RideID;
+    private long RideID;
 	
     public Ride() {
     	super();
@@ -34,7 +34,7 @@ public class Ride {
 		this.distanceTraveled = 0;
 		this.duration = 0;
 		this.status = RequestStatus.CREATED;
-		this.requestType = RequestType.PHONE;
+		this.requestType = RequestType.values()[1];
 		this.startingPrice = 0;
 		this.pricePerKm = 0;
 		RideID = 0;
@@ -42,7 +42,7 @@ public class Ride {
 
     public Ride(String requestDateTime, String startingAddress, String destinationAddress, Customer customer,
 			Driver driver, double distanceTraveled, double duration, RequestStatus status, RequestType requestType,
-			double startingPrice, double pricePerKm, int rideID) {
+			double startingPrice, double pricePerKm, long rideID) {
 		super();
 		this.requestDateTime = requestDateTime;
 		this.startingAddress = startingAddress;
@@ -178,13 +178,13 @@ public class Ride {
 	}
 
 
-	public int getRideID() {
+	public long getRideID() {
 		return RideID;
 	}
 
 
-	public void setRideID(int rideID) {
-		RideID = rideID;
+	public void setRideID(long rideID) {
+		this.RideID = rideID;
 	}
 	
 
@@ -227,7 +227,7 @@ public class Ride {
 				RequestType requestType = RequestType.values()[Integer.parseInt(split[8])];
 				double startingPrice = Double.parseDouble(split[9]);
 				double pricePerKm = Double.parseDouble(split[10]);
-				int rideID = Integer.parseInt(split[11]);
+				long rideID = Long.valueOf(split[11]);
 				
 				Ride ride = new Ride(requestDateTime, startingAddress, destinationAddress, customer,
 						driver, distanceTraveled, duration, status, requestType,

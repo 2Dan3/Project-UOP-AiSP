@@ -1,5 +1,8 @@
 package uiDataInputForms;
 
+import entities.Driver;
+import entities.DriverStatus;
+import entities.TaxiService;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -22,9 +25,11 @@ import entities.Gender;
 import entities.TaxiService;
 import entities.ValidatorClass;
 
-
-public class DispatcherDataForm extends JFrame {
-
+public class DriverDataForm extends JFrame{
+	
+	private TaxiService taxiSvc;
+	private Driver driver;
+	
 	private JLabel lblUsername = new JLabel("  Korisni\u010Dko ime >>");
 		private JTextField txtUsername= new JTextField(20);
 	private JLabel lblPass = new JLabel("  Lozinka >>");
@@ -41,28 +46,26 @@ public class DispatcherDataForm extends JFrame {
 		private JTextField txtPhone = new JTextField(13);
 	private JLabel lblAddress = new JLabel("  Adresa >> ");
 		private JTextField txtAddress = new JTextField();
-	private JLabel lblPhoneLineNum = new JLabel("  Br.Tel. linije >> ");
-		private JTextField txtPhoneLineNum = new JTextField();
-	private JLabel lblDepartment = new JLabel("  Odeljenje >> ");
-		private JComboBox<Department> departmentCBox = new JComboBox<Department>(Department.values());
+	private JButton assignVehicleBtn = new JButton("  Automobil >> ");// TODO umesto texta, ImageIcon crvenog/zutog autica
+	
+	private JLabel lblMembershipCardNum = new JLabel("  Br.\u010Dlanske karte >>");
+		private JTextField txtMembershipCardNum = new JTextField();
 	private JLabel lblSalary = new JLabel("  Plata >> ");
 		private JTextField txtSalary = new JTextField();
-		
+	
 	private JButton btnSave = new JButton("Sa\u010Duvaj");
 	private JButton btnCancel = new JButton("Odustani");
-	
-	private TaxiService taxiSvc;
-	//TODO 
-	private Dispatcher dispatcher;
-	
 
-	public DispatcherDataForm(TaxiService taxiSvc, Dispatcher dispatcher) {
+	
+		
+	public DriverDataForm(TaxiService taxiSvc, Driver driver) {
 		this.taxiSvc = taxiSvc;
-		this.dispatcher = dispatcher;
-		if(dispatcher == null) {
-			setTitle("Dodavanje dispe\u010Dera");
+		this.driver = driver;
+		
+		if(driver == null) {
+			setTitle("Dodavanje voza\u010Da");
 		}else {
-			setTitle("Izmena podataka - " + dispatcher.getUsername());
+			setTitle("Izmena podataka - " + driver.getUsername());
 		}
 		
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -78,7 +81,7 @@ public class DispatcherDataForm extends JFrame {
 
 	private void initGUI() {
 
-		if(dispatcher != null) {
+		if(driver != null) {
 			fillInTextFieldValues();
 			txtJmbg.setBackground(Color.LIGHT_GRAY);
 			txtJmbg.setDisabledTextColor(Color.black);
@@ -108,12 +111,12 @@ public class DispatcherDataForm extends JFrame {
 		add(txtPhone);
 		add(lblAddress);
 		add(txtAddress);
-		add(lblPhoneLineNum);
-		add(txtPhoneLineNum);
+		add(new JLabel());
+		add(assignVehicleBtn);
+		add(lblMembershipCardNum);
+		add(txtMembershipCardNum);
 		add(lblSalary);
 		add(txtSalary);
-		add(lblDepartment);
-		add(departmentCBox);
 		add(new JLabel());
 		add(btnSave);
 		add(new JLabel());
@@ -129,7 +132,6 @@ public class DispatcherDataForm extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				/* TODO if (ValidatorClass.validateFields()) {*/
 				
-				//TODO pozivi funkcije PomocnaKlasa.capitalize();
 					String username = txtUsername.getText().trim();
 					String pass = new String(txtPass.getPassword());
 					String name = txtName.getText().trim();
@@ -138,14 +140,14 @@ public class DispatcherDataForm extends JFrame {
 					Gender gen = (Gender)genderCBox.getSelectedItem();
 					String ph = txtPhone.getText().trim();
 					String address = txtAddress.getText().trim();
-					String phLnNum = txtPhoneLineNum.getText().trim();
+//TODO funkcija koja vraca Vehicle obj iz reda izabranog u tabeli automobila, prikazanoj klikom na dugme "Automobili"			Vehicle vehicle = txtPhoneLineNum.getText().trim();
+					String membershipCardNum = txtMembershipCardNum.getText().trim();
 					String salaryInput = txtSalary.getText().trim();
-					Department dept = (Department)departmentCBox.getSelectedItem();
 					
 					String warningMsg;
 					if ( !( warningMsg = ValidatorClass.validateFields(username, pass, name, lastName, jmbgInput, ph, address, salaryInput) ).isBlank() ) {
 						
-						JOptionPane.showMessageDialog(DispatcherDataForm.this, warningMsg, "Pa\u017Enja, potrebno je da ispravite gre\u0161ke: \n", JOptionPane.WARNING_MESSAGE);
+						JOptionPane.showMessageDialog(DriverDataForm.this, warningMsg, "Pa\u017Enja, potrebno je da ispravite gre\u0161ke: \n", JOptionPane.WARNING_MESSAGE);
 					}
 					else{
 						name = ValidatorClass.capitalize( name );
@@ -154,27 +156,28 @@ public class DispatcherDataForm extends JFrame {
 						long jmbg = Long.valueOf(jmbgInput);
 						double salary = Double.parseDouble(salaryInput);
 						
-						if(dispatcher != null) { // EDITING obj:
-							dispatcher.setUsername(username);
-							dispatcher.setPassword(pass);
-							dispatcher.setName(name);
-							dispatcher.setLastName(lastName);
-							dispatcher.setJmbg(jmbg);
-							dispatcher.setGender(gen);
-							dispatcher.setPhoneNum(ph);
-							dispatcher.setAddress(address);
-							dispatcher.setPhoneLineNum(phLnNum);
-							dispatcher.setSalary(salary);
-							dispatcher.setDept(dept);
+						if(driver != null) { // EDITING obj:
+							driver.setUsername(username);
+							driver.setPassword(pass);
+							driver.setName(name);
+							driver.setLastName(lastName);
+							driver.setJmbg(jmbg);
+							driver.setGender(gen);
+							driver.setPhoneNum(ph);
+							driver.setAddress(address);
+							//TODO	driver.setVehicle(vehicle);
+							driver.setMembershipCardNum(membershipCardNum);
+							driver.setSalary(salary);
+							
 						}else { // ADDING obj:
 							
-							Dispatcher newDisp = new Dispatcher(username, pass, name, lastName, jmbg, gen, ph, address, salary, phLnNum, dept, false);
-							taxiSvc.addNew(newDisp);
+							Driver newDriver = new Driver(username, pass, name, lastName, jmbg, gen, ph, address, membershipCardNum, null, DriverStatus.values()[1], salary, false);
+							taxiSvc.addNew(newDriver);
 					}
 					
-					taxiSvc.saveDispatchers("Dispatchers.csv");
-					DispatcherDataForm.this.dispose();
-					DispatcherDataForm.this.setVisible(false);
+					taxiSvc.saveDrivers("Drivers.csv");
+					DriverDataForm.this.dispose();
+					DriverDataForm.this.setVisible(false);
 					//TODO uncomment kad nadjem nacin da radi odavde: refreshWindow();
 			}		}
 		});
@@ -183,8 +186,8 @@ public class DispatcherDataForm extends JFrame {
 		btnCancel.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				DispatcherDataForm.this.dispose();
-				DispatcherDataForm.this.setVisible(false);
+				DriverDataForm.this.dispose();
+				DriverDataForm.this.setVisible(false);
 			}
 		});
 		
@@ -192,17 +195,16 @@ public class DispatcherDataForm extends JFrame {
 	
 	
 	private void fillInTextFieldValues() {
-			txtUsername.setText(dispatcher.getUsername());
-			txtPass.setText(dispatcher.getPassword());
-			txtName.setText(dispatcher.getName());
-			txtLastName.setText(dispatcher.getLastName());
-			txtJmbg.setText(String.valueOf(dispatcher.getJmbg()));
-			genderCBox.setSelectedItem(dispatcher.getGender());
-			txtPhone.setText(dispatcher.getPhoneNum());
-			txtAddress.setText(dispatcher.getAddress());
-			txtPhoneLineNum.setText(dispatcher.getPhoneLineNum());
-			txtSalary.setText(String.valueOf(dispatcher.getSalary()));
-			departmentCBox.setSelectedItem(dispatcher.getDept());
+			txtUsername.setText(driver.getUsername());
+			txtPass.setText(driver.getPassword());
+			txtName.setText(driver.getName());
+			txtLastName.setText(driver.getLastName());
+			txtJmbg.setText(String.valueOf(driver.getJmbg()));
+			genderCBox.setSelectedItem(driver.getGender());
+			txtPhone.setText(driver.getPhoneNum());
+			txtAddress.setText(driver.getAddress());
+			txtMembershipCardNum.setText(driver.getMembershipCardNum());
+			txtSalary.setText(String.valueOf(driver.getSalary()));
 		}
 	
 }

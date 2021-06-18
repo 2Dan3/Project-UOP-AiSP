@@ -26,8 +26,8 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 import entities.TaxiService;
-//import main.TaxiService;
 import uiDataInputForms.DispatcherDataForm;
+import uiOperatingWindows.DriverOperativeWindow;
 import entities.Dispatcher;
 
 public class DispatcherMainWindow extends JFrame {
@@ -56,11 +56,11 @@ public class DispatcherMainWindow extends JFrame {
 	private DefaultTableModel tableModel;
 	
 							//TaxiService taxiSvc
-	public DispatcherMainWindow(Dispatcher currentDispatcher) {
+	public DispatcherMainWindow(TaxiService taxiSvc, Dispatcher currentDispatcher) {
 		
-		//this.taxiSvc = taxiSvc;
+		this.taxiSvc = taxiSvc;
 		this.currentDispatcher = currentDispatcher;
-		this.setTitle("Dispe\u010Der :: " + currentDispatcher.getUsername());// + current_user/dispatch
+		this.setTitle("Dispe\u010Der :: " + currentDispatcher.getUsername());
 		this.setSize(1100, 300);
 		this.setLocationRelativeTo(null);
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -128,7 +128,7 @@ public class DispatcherMainWindow extends JFrame {
 		this.add(buttonBox, BorderLayout.WEST);
 
 		//TODO taxiSvc.getAllDispatchers();
-		ArrayList<Dispatcher> ldispatchers = Dispatcher.getNonDeletedDispatchers();
+		ArrayList<Dispatcher> ldispatchers = taxiSvc.getNonDeletedDispatchers();
 		
 		String[] tableHeader = new String[] {"Korisni\u010Dko ime","Lozinka","Ime","Prezime",
 				"JMBG","Pol","Telefon","Adresa","Br.Tel. linije","Odeljenje","Plata"};
@@ -176,12 +176,13 @@ public class DispatcherMainWindow extends JFrame {
 		
 	}
 	
+	
 	private void initEvents() {
 		
 		addBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				DispatcherDataForm ddf = new DispatcherDataForm(null);
+				DispatcherDataForm ddf = new DispatcherDataForm(taxiSvc, null);
 				ddf.setVisible(true);
 				
 			}
@@ -195,11 +196,11 @@ public class DispatcherMainWindow extends JFrame {
 					JOptionPane.showMessageDialog(null, "Molimo, pre izmene ozna\u010Dite red u tabeli!", "Pa\u017Enja", JOptionPane.WARNING_MESSAGE);
 				}else {
 					long jmbg = (long) tableModel.getValueAt(row, 4);
-					Dispatcher dispatcher = TaxiService.findDispatcher(jmbg);
+					Dispatcher dispatcher = taxiSvc.findDispatcher(jmbg);
 					if(dispatcher == null) {
 						JOptionPane.showMessageDialog(null, "Dispe\u010Der sa tim JMBG nije prona\u0111en.", "Gre\u0161ka", JOptionPane.INFORMATION_MESSAGE);
 					}else {
-						DispatcherDataForm ddf = new DispatcherDataForm(dispatcher);
+						DispatcherDataForm ddf = new DispatcherDataForm(taxiSvc, dispatcher);
 						ddf.setVisible(true);
 					}
 				}
@@ -214,19 +215,19 @@ public class DispatcherMainWindow extends JFrame {
 				}else {
 					long jmbg = (long) tableModel.getValueAt(row, 4);
 					String username = tableModel.getValueAt(row, 0).toString();
-					Dispatcher dispatcher = TaxiService.findDispatcher(jmbg);
+					Dispatcher dispatcher = taxiSvc.findDispatcher(jmbg);
 					if(dispatcher == null) {
-						JOptionPane.showMessageDialog(null, "Dispe\u016Der ne postoji ili je obrisan iz sistema.", "Nepostoje\u0107i dispe\u016Der", JOptionPane.INFORMATION_MESSAGE);
+						JOptionPane.showMessageDialog(null, "Dispe\u0161er ne postoji ili je obrisan iz sistema.", "Nepostoje\u0107i dispe\u0161er", JOptionPane.INFORMATION_MESSAGE);
 					}
 					else {	
 						int confirmation = JOptionPane.showConfirmDialog(null, 
 								"Da li ste sigurni da \u017Eelite da obri\u0161ete dispe\u010Dera?", 
-								username + " - Potvrda brisanja", JOptionPane.YES_NO_OPTION);
+								username + " ¤ Potvrda brisanja", JOptionPane.YES_NO_OPTION);
 						
 						if(confirmation == JOptionPane.YES_OPTION) {
 							dispatcher.setDeleted(true);
 							//TODO da se iz fajla ne brise korisnik koji je logicki obrisan pri ponovnom snimanju iz liste tableModel.removeRow(row);
-							Dispatcher.saveDispatchers("Dispatchers.csv");
+							taxiSvc.saveDispatchers("Dispatchers.csv");
 							refreshWindow();
 						}
 					}
@@ -236,21 +237,32 @@ public class DispatcherMainWindow extends JFrame {
 		refreshBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				DispatcherMainWindow dpNewWin = new DispatcherMainWindow(currentDispatcher);
+				DispatcherMainWindow dpNewWin = new DispatcherMainWindow(taxiSvc, currentDispatcher);
 				dpNewWin.setVisible(true);
-				//TODO check and move around if not working
+
 				DispatcherMainWindow.this.dispose();
 				DispatcherMainWindow.this.setVisible(false);
 				
 			}
 		});
+		driversItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				DriverOperativeWindow drNewWin = new DriverOperativeWindow(taxiSvc, currentDispatcher);
+				drNewWin.setVisible(true);
+				
+				DispatcherMainWindow.this.dispose();
+				DispatcherMainWindow.this.setVisible(false);
+			}
+		});
+		
 	}
 	
 	public JButton getRefreshBtn() {
 		return refreshBtn;
 	}
 	public void refreshWindow() {
-		refreshBtn.doClick(330);
+		refreshBtn.doClick(350);
 	}
 	
 	

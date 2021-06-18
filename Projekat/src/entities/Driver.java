@@ -19,7 +19,7 @@ public class Driver extends Employee {
     	super();
     	this.membershipCardNum = "";
 		this.vehicle = null;
-		this.driverStatus = DriverStatus.NONACTIVE;
+		this.driverStatus = DriverStatus.values()[1];
     }
     
     public Driver(String username, String password, String name, String lastName, long jmbg, Gender gender,
@@ -225,7 +225,7 @@ public class Driver extends Employee {
 		}
 	}
     
-    public static void driverCRUDMenu() {
+   /* public static void driverCRUDMenu() {
     	
     	int cmd = -1;
     	while(cmd != 0) {
@@ -257,7 +257,7 @@ public class Driver extends Employee {
     		}
     		    		
     	}
-    }
+    }*/
     
     // // //
     public static void showDriverMenu() {
@@ -307,69 +307,6 @@ public class Driver extends Employee {
     
     
 
-	public void loadInDrivers(String filename) {
-    	
-    	String sp = System.getProperty("file.separator");
-    	
-		try {
-			File file = new File("src" + sp + "dataFiles" + sp + filename);
-			BufferedReader reader = new BufferedReader(new FileReader(file));
-			
-			String row;
-			while ((row = reader.readLine()) != null) {
-				
-				String[] split = row.split("\\|");
-				
-				String username = split[0];
-				String password = split[1];
-				String name= split[2];
-				String lastName= split[3];
-				long jmbg = Long.parseLong(split[4]);
-				Gender gender = Gender.values()[Integer.parseInt(split[5])];
-				String phoneNum = split[6];
-				String address = split[7];
-				double salary = Double.parseDouble(split[8]);
-				String membershipCardNum = split[9];
-/*	*/				Vehicle vehicle = findVehicle(Integer.parseInt(split[10]));
-				DriverStatus driverStatus = DriverStatus.values()[Integer.parseInt(split[11])];
-				boolean deleted = Boolean.parseBoolean(split[12]);
-				
-				Driver driver = new Driver(username, password, name, lastName, jmbg, gender, phoneNum, address, membershipCardNum, vehicle, driverStatus, salary, deleted);
-				allDrivers.add(driver);
-				
-			}
-			reader.close();
-		} catch (IOException e) {
-			System.out.println("Greska prilikom citanja podataka o vozacima.");
-			e.printStackTrace();
-		}
-	}
-    
-
-
 	
-
-	public static void saveDrivers(String filename) {
-    	
-    	String sp = System.getProperty("file.separator");
-    	
-		try {
-			File file = new File("src" + sp + "dataFiles" + sp + filename);
-			String content = "";
-			for (Driver driver: allDrivers) {
-				content += driver.getUsername() + "|" + driver.getPassword() + "|"
-						+ driver.getName() + "|" + driver.getLastName()+ "|" + driver.getJmbg() + "|"
-						+ driver.getGender().ordinal() + "|" + driver.getPhoneNum() + "|" + driver.getAddress() + "|"
-						+ driver.getSalary() + "|" + driver.getMembershipCardNum() + "|" + driver.getVehicle().getVINNum() + "|"
-						+ driver.getDriverStatus().ordinal() + "|" + driver.isDeleted() +"\n";
-			}
-			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-			writer.write(content);
-			writer.close();
-			
-		} catch (IOException e) {
-			System.out.println("Greska prilikom upisivanja vozaca.");
-		}
-	}
 
 }

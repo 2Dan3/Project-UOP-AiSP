@@ -1,6 +1,7 @@
-/ui/
-/uiMainWindows/
-/entities/
-/icons/
-/uiDataInputForms/
 /dataFiles/
+/entities/
+/main/
+/ui/
+/uiDataInputForms/
+/uiMainWindows/
+/uiOperatingWindows/

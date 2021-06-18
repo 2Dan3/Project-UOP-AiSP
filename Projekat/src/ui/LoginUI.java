@@ -1,25 +1,21 @@
 package ui;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Scanner;
-
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import entities.Dispatcher;
-import entities.Driver;
+import entities.TaxiService;
 import uiMainWindows.DispatcherMainWindow;
 
 //import entities.Roles;
@@ -31,14 +27,15 @@ public class LoginUI extends JFrame {
 	private JLabel passwordLabel = new JLabel("Lozinka:");
 	private JPasswordField passwordText = new JPasswordField();
 	private JButton loginButton = new JButton("Prijavi me");
-	private String[] niz = new String[] {"Dimi","Dan"};
 	private JComboBox<Roles> rolesComboBox = new JComboBox<Roles>(Roles.values());
 	private JLabel success = new JLabel();
 	
+	private TaxiService taxiSvc;
 	
-	public LoginUI () {
+	
+	public LoginUI (TaxiService taxiSvc) {
 		
-	
+		this.taxiSvc = taxiSvc;
 		
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
 		Dimension screenSize = toolkit.getScreenSize();
@@ -93,8 +90,8 @@ public class LoginUI extends JFrame {
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-
-		LoginUI loginUI = new LoginUI();
+		TaxiService taxiSvc = new TaxiService();
+		LoginUI loginUI = new LoginUI(taxiSvc);
 		loginUI.setVisible(true);
 		
 		
@@ -118,18 +115,19 @@ public class LoginUI extends JFrame {
 					//TODO Uprostiti, staviti u Login funkciju u drugi fajl, zatim pozvati odavde :
 					  
 					if(rolesComboBox.getSelectedItem() == Roles.DISPEÈER) {//TODO videti zasto je error kod poziva Dispatcher.getNonDeletedDispatchers() ! ! ! 
-						for (Dispatcher user : Dispatcher.getNonDeletedDispatchers()) {
+						for (Dispatcher user : taxiSvc.getNonDeletedDispatchers()) {
 							if(username.equals(user.getUsername()) && pass.equals(user.getPassword())) {
 								found = true;
-								DispatcherMainWindow dpMainWin = new DispatcherMainWindow(user);
+								DispatcherMainWindow dpMainWin = new DispatcherMainWindow(taxiSvc, user);
 								dpMainWin.setVisible(true);
 								LoginUI.this.dispose();
 								LoginUI.this.setVisible(false);
 								break;
 							}
 						}
-						System.out.println(Dispatcher.getNonDeletedDispatchers());
-						System.out.println(Dispatcher.getAllDispatchers());
+						//System.out.println("undel" +taxiSvc.getNonDeletedDispatchers());
+						//System.out.println("  all" +taxiSvc.getAllDispatchers());
+						
 					}/*else if(rolesComboBox.getSelectedItem() == Roles.VOZAÈ) {
 						for (Driver user : getAllDrivers()) {
 							if(user.equals(user.getUsername()) && pass.equals(user.getPassword())) {

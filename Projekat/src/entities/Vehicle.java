@@ -18,8 +18,9 @@ public class Vehicle {
     private String taxiVehicleNum;
     private VehicleType type;
     private boolean hasDriver;
-    private int VINNum;
+    private String VINNum;
     private boolean deleted;
+    private long carID;
 	
     public Vehicle() {
     	super();
@@ -28,15 +29,16 @@ public class Vehicle {
 		this.yearOfMake = 0;
 		this.registrationNum = "";
 		this.taxiVehicleNum = "";
-		this.type = VehicleType.CAR;
+		this.type = VehicleType.values()[0];
 		this.hasDriver = false;
-		this.VINNum = 0;
+		this.VINNum = "";
 		this.deleted = false;
+		this.carID = 0;
     }
     
 
     public Vehicle(String make, String model, int yearOfMake, String registrationNum, String taxiVehicleNum,
-			VehicleType type, boolean hasDriver, int VINNum, boolean deleted) {
+			VehicleType type, boolean hasDriver, String VINNum, boolean deleted, long carID) {
 		super();
 		this.make = make;
 		this.model = model;
@@ -47,6 +49,7 @@ public class Vehicle {
 		this.hasDriver = hasDriver;
 		this.VINNum = VINNum;
 		this.deleted = deleted;
+		this.carID = carID;
 	}
     
     // GETTERS & SETTERS
@@ -140,13 +143,21 @@ public class Vehicle {
 	}
 
 
-	public int getVINNum() {
+	public String getVINNum() {
 		return VINNum;
 	}
 
 
-	public void setVINNum(int vINNum) {
+	public void setVINNum(String vINNum) {
 		VINNum = vINNum;
+	}
+	
+	public long getCarID() {
+		return carID;
+	}
+	
+	public void setCarID(long carID) {
+		this.carID = carID;
 	}
 	
 
@@ -193,11 +204,12 @@ public class Vehicle {
 				String taxiVehicleNum = split[4];
 				VehicleType type = VehicleType.values()[Integer.parseInt(split[5])];
 				boolean hasDriver = Boolean.parseBoolean(split[6]);
-				int VINNum= Integer.parseInt(split[7]);
+				String VINNum= split[7];
 				boolean deleted = Boolean.parseBoolean(split[8]);
+				long carID = Long.valueOf(split[9]);
 				
 				Vehicle vehicle1 = new Vehicle(make, model, yearOfMake, registrationNum, taxiVehicleNum,
-					 type, hasDriver, VINNum, deleted);
+					 type, hasDriver, VINNum, deleted, carID);
 				allVehicles.add(vehicle1);
 
 			}
@@ -222,7 +234,7 @@ public class Vehicle {
 				content += vehicle.getMake() + "|" + vehicle.getModel() + "|"
 						+ vehicle.getYearOfMake() + "|" + vehicle.getRegistrationNum() + "|"
 						+ vehicle.getTaxiVehicleNum() + "|" + vehicle.getType() + "|"
-						+ vehicle.getHasDriver() + "|" + vehicle.getVINNum() + "|" + vehicle.isDeleted() + "\n";
+						+ vehicle.getHasDriver() + "|" + vehicle.getVINNum() + "|" + vehicle.isDeleted() + "|" + vehicle.carID +"\n";
 			}
 			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
 			writer.write(content);

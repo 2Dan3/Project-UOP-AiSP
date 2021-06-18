@@ -8,7 +8,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
-import javax.swing.JFrame;
 
 public class Dispatcher extends Employee { 
 
@@ -34,7 +33,7 @@ public class Dispatcher extends Employee {
     
     
     
-    public static void showAllDispatchers() {
+    /*public static void showAllDispatchers() {
     	for (Dispatcher d : allDispatchers) {
     		System.out.println(d);
     	}
@@ -72,7 +71,7 @@ public class Dispatcher extends Employee {
     	
     	allDispatchers.add(new Dispatcher(username, password, name, lastName, jmbg, gender, phone, address, salary, phoneLineNum, department, deleted));
     	saveDispatchers("Dispatchers.csv");
-    }
+    }*/
     
    /* public static void editDispatcher() {
 		System.out.println("Izmeniti dispecera [JMBG] >> ");
@@ -217,7 +216,7 @@ public class Dispatcher extends Employee {
     		    		
     	}
     }*/
-    
+    /*
     public static void addNew(Dispatcher dp) {
     	allDispatchers.add(dp);
     }
@@ -247,12 +246,12 @@ public class Dispatcher extends Employee {
 	// GETTERS & SETTERS
     //TODO
     public static ArrayList<Dispatcher> getAllDispatchers() {
-    	/*allDispatchers.clear();
-    	allDispatchers.add(new Dispatcher("mirkoM","lozinka123","Mirko","Mirkovic",1102996800,Gender.MUSKI,"064112361","Bul.Cara Lazara 82",65000.05,"022333",Department.REQUESTS,false));
-    	allDispatchers.add(new Dispatcher("srdjanP","lozinka777","Srdjan","Popovic",1308998806,Gender.MUSKI,"064127885","Cara Dusana 22",54030.07,"022333",Department.REQUESTS,false));
-    	allDispatchers.add(new Dispatcher("lukaP","lozinka182","Luka","Pavlov",0707000100,Gender.MUSKI,"0634576951","Bul.Evrope 102",71003.09,"022333",Department.REQUESTS,false));
-		*/return allDispatchers;
-	}
+    	//allDispatchers.clear();
+    	//allDispatchers.add(new Dispatcher("mirkoM","lozinka123","Mirko","Mirkovic",1102996800,Gender.MUSKI,"064112361","Bul.Cara Lazara 82",65000.05,"022333",Department.REQUESTS,false));
+    	//allDispatchers.add(new Dispatcher("srdjanP","lozinka777","Srdjan","Popovic",1308998806,Gender.MUSKI,"064127885","Cara Dusana 22",54030.07,"022333",Department.REQUESTS,false));
+    	//allDispatchers.add(new Dispatcher("lukaP","lozinka182","Luka","Pavlov",0707000100,Gender.MUSKI,"0634576951","Bul.Evrope 102",71003.09,"022333",Department.REQUESTS,false));
+		return allDispatchers;
+	}*/
 
     
     
@@ -351,7 +350,7 @@ public class Dispatcher extends Employee {
     // FILE IO
 	
     //TODO Changed to static, replaced void, testing fileOutput
-    public static ArrayList<Dispatcher> loadInDispatchers(String filename) {
+    /*public ArrayList<Dispatcher> loadInDispatchers(String filename) {
     	allDispatchers.clear();
     	String sp = System.getProperty("file.separator");
     	
@@ -410,6 +409,6 @@ public class Dispatcher extends Employee {
 		} catch (IOException e) {
 			System.out.println("Gre\u0161ka prilikom upisivanja dispe\u010Dera.");
 		}
-	}
+	}*/
 
 }

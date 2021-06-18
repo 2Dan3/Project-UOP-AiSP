@@ -34,41 +34,39 @@ public class ValidatorClass {
 		return capitalized.trim();
 	}
 	
-	public static int validateFields(String username, String pass, String name, String lastName, long jmbg, String ph, String address) {
+	public static String validateFields(String username, String pass, String name, String lastName, String jmbg, String ph, String address, String salary) {
 		
 		String warningMsg = "";
-		int errors = 0;
 		
-		if(name.isBlank()) {
-			warningMsg += "- Unesite ime\n";
-			errors++;
-		}
-		if(lastName.isBlank()) {
-			warningMsg += "- Unesite prezime\n";
-			errors++;
-		}
+		
 		if(username.isBlank()) {
-			warningMsg += "- Unesite korisni\u016Dko ime\n";
-			errors++;
+			warningMsg += "¤ Unesite korisni\u010Dko ime\n";
 		}/*else if(prodavac == null){
 			String korisnickoIme = txtKorisnickoIme.getText().trim();
 			Prodavac pronadjeni = prodavnica.nadjiProdavca(korisnickoIme);
 			if(pronadjeni != null) {
-				warningMsg += "- Prodavac sa tim korisnickim imenom vec postoji\n";
-				errors++;
+				warningMsg += "¤ Prodavac sa tim korisnickim imenom vec postoji\n";
 			}
 		}*/
 		
 		if(pass.isBlank()) {
-			warningMsg += "- Unesite lozinku\n";
-			errors++;
-		}//TODO Change from 10 to 13
-		if(String.valueOf(jmbg).length() != 10) {
-			warningMsg += "- JMBG mora imati 10 cifara\n";
-			errors++;
+			warningMsg += "¤ Unesite lozinku\n";
 		}
+		
+		if(name.isBlank()) {
+			warningMsg += "¤ Unesite ime\n";
+		}
+		
+		if(lastName.isBlank()) {
+			warningMsg += "¤ Unesite prezime\n";
+		}
+		
+		if(String.valueOf(jmbg).length() != 13) {
+			warningMsg += "¤ JMBG mora imati 13 cifara\n";
+		}
+		
 		if(ph.isBlank()) {
-			warningMsg += "- Unesite broj telefona\n";
+			warningMsg += "¤ Unesite broj telefona\n";
 		}else {
 			int maxDigits = 10;
 			
@@ -76,22 +74,22 @@ public class ValidatorClass {
 				maxDigits = 13;
 			}
 			if(ph.length() > maxDigits || ph.length() < 6) {
-				warningMsg += "- Preduga\u016Dak ili prekratak broj\n";
-				errors++;
+				warningMsg += "¤ Preduga\u010Dak ili prekratak broj\n";
 			}
 		}
-		if(!Character.isDigit(address.charAt(address.length()-1))) {
-			warningMsg += "- Dodajte broj na unetu adresu\n";
-			errors++;
+		
+		if (address.isBlank() ) {
+			warningMsg += "¤ Unesite adresu";
+		}
+		else if(!Character.isDigit(address.charAt(address.length()-1)) && !Character.isDigit(address.charAt(address.length()-2)) ) {
+			warningMsg += "¤ Dodajte broj na unetu adresu\n";
 		}
 		
-		if(errors > 0) {
-			String warningTitle = "Prona\u0111eno gre\u0161aka: " + errors;
-			warningMsg += "Potrebno je da ispravite gre\u0161ke:\n";
-			JOptionPane.showMessageDialog(null, warningMsg, warningTitle, JOptionPane.WARNING_MESSAGE);
+		if (salary.isBlank() ) {
+			warningMsg += "¤ Unesite platu";
 		}
 		
-		return errors;
+		return warningMsg;
 	}
 	
 

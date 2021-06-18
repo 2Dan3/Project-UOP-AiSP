@@ -23,11 +23,15 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import entities.Dispatcher;
+import entities.Driver;
+import entities.Ride;
 import entities.TaxiService;
 
 public class DriverMainWindow extends JFrame {
 	
-//	TaxiService taxiSvc;
+	private TaxiService taxiSvc;
+	private Driver currentDriver;
+	
 	private JButton addBtn = new JButton();
 	private JButton editBtn = new JButton();
 	
@@ -40,17 +44,16 @@ public class DriverMainWindow extends JFrame {
 	private JMenuItem ridesItem1 = new JMenuItem("Dodeljene vo\u017Enje");
 	private JMenuItem ridesItem2 = new JMenuItem("Na\u0111i novu vo\u017Enju");
 
-
-//JToolBar mainToolbar = new JToolBar();
-	JTable table;
-	DefaultTableModel tableModel;
+	private JTable table;
+	private DefaultTableModel tableModel;
 	
-							//TaxiService taxiSvc
-	public DriverMainWindow() {
+
+	public DriverMainWindow(TaxiService taxiSvc, Driver currentDriver) {
 		
-		//this.taxiSvc = taxiSvc;
+		this.taxiSvc = taxiSvc;
+		this.currentDriver = currentDriver;
 		
-		this.setTitle("Voza\u010D :: ");// + current_user/driver
+		this.setTitle("Voza\u010D :: " + currentDriver.getName() + " " + currentDriver.getLastName());
 		this.setSize(1100, 300);
 		this.setLocationRelativeTo(null);
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -68,7 +71,7 @@ public class DriverMainWindow extends JFrame {
 		mainMenu.add(carMenu);
 		mainMenu.add(rideMenu);
 		
-		carsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.CTRL_DOWN_MASK));
+		carsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_DOWN_MASK));
 		carMenu.add(carsItem);
 		
 		ridesItem1.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_DOWN_MASK));
@@ -102,26 +105,26 @@ public class DriverMainWindow extends JFrame {
 		//TODO mainToolbar.setBounds(0, 600, 1200, 150);*/
 		this.add(buttonBox, BorderLayout.WEST);
 		
-		ArrayList<Dispatcher> dispatchers = Dispatcher.getAllDispatchers();
+		ArrayList<Ride> rides = taxiSvc.getAllRides();
 		
 		String[] tableHeader = new String[] {"Korisni\u010Dko ime","Lozinka","Ime","Prezime",
 				"JMBG","Pol","Telefon","Adresa","Br.Tel. linije","Odeljenje","Plata"};
 		
-		Object[][] tableData = new Object[dispatchers.size()][tableHeader.length];
+		Object[][] tableData = new Object[rides.size()][tableHeader.length];
 		
-		for (int i = 0; i < dispatchers.size(); i++) {
-			Dispatcher dp = dispatchers.get(i);
-			tableData[i][0] = dp.getUsername();
-			tableData[i][1] = dp.getPassword();
-			tableData[i][2] = dp.getName();
-			tableData[i][3] = dp.getLastName();
-			tableData[i][4] = dp.getJmbg();
-			tableData[i][5] = dp.getGender().toString();
-			tableData[i][6] = dp.getPhoneNum();
-			tableData[i][7] = dp.getAddress();
-			tableData[i][8] = dp.getPhoneLineNum();
-			tableData[i][9] = dp.getDept().toString();
-			tableData[i][10] = dp.getSalary();
+		for (int i = 0; i < rides.size(); i++) {
+			Ride ride = rides.get(i);
+			tableData[i][0] = ride.getUsername();
+			tableData[i][1] = ride.getPassword();
+			tableData[i][2] = ride.getName();
+			tableData[i][3] = ride.getLastName();
+			tableData[i][4] = ride.getJmbg();
+			tableData[i][5] = ride.getGender().toString();
+			tableData[i][6] = ride.getPhoneNum();
+			tableData[i][7] = ride.getAddress();
+			tableData[i][8] = ride.getPhoneLineNum();
+			tableData[i][9] = ride.getDept().toString();
+			tableData[i][10] = ride.getSalary();
 		}
 		
 		tableModel = new DefaultTableModel(tableData, tableHeader);
@@ -147,8 +150,8 @@ public class DriverMainWindow extends JFrame {
 		
 	}
 	
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		DriverMainWindow drWin = new DriverMainWindow();
 		drWin.setVisible(true);
-	}
+	}*/
 }
