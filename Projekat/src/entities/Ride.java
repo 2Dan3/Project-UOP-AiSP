@@ -60,14 +60,7 @@ public class Ride {
     
     // GETTERS & SETTERS
     
-    public ArrayList<Ride> getAllRides() {
-		return allRides;
-	}
-
-	public void setAllRides(ArrayList<Ride> allRides) {
-		this.allRides = allRides;
-	}
-	
+    
 	public String getRequestDateTime() {
 		return requestDateTime;
 	}
@@ -196,74 +189,8 @@ public class Ride {
 				+ ", requestType=" + requestType + ", startingPrice=" + startingPrice + ", pricePerKm=" + pricePerKm
 				+ ", RideID=" + RideID + "]";
 	}
-
-
     
     //FILE IO
     
-    
-    public void loadInRides(String filename) {
-    	
-    	String sp = System.getProperty("file.separator");
-    	
-		try {
-			File file = new File("src" + sp + "dataFiles" + sp + filename);
-			BufferedReader reader = new BufferedReader(new FileReader(file));
-			
-			String row;
-			while ((row = reader.readLine()) != null) {
-				
-				String[] split = row.split("\\|");
-				
-				
-				String requestDateTime = split[0];
-				String startingAddress = split[1];
-				String destinationAddress = split[2];
-				Customer customer = findCustomer(split[3]);
-				Driver driver = findDriver(split[4]);
-				double distanceTraveled = Double.parseDouble(split[5]);
-				double duration= Double.parseDouble(split[6]);
-				RequestStatus status= RequestStatus.values()[Integer.parseInt(split[7])];
-				RequestType requestType = RequestType.values()[Integer.parseInt(split[8])];
-				double startingPrice = Double.parseDouble(split[9]);
-				double pricePerKm = Double.parseDouble(split[10]);
-				long rideID = Long.valueOf(split[11]);
-				
-				Ride ride = new Ride(requestDateTime, startingAddress, destinationAddress, customer,
-						driver, distanceTraveled, duration, status, requestType,
-						startingPrice, pricePerKm, rideID);
-				allRides.add(ride);
-				
-			}
-			reader.close();
-		} catch (IOException e) {
-			System.out.println("Greska prilikom citanja podataka o voznjama.");
-			e.printStackTrace();
-		}
-	}
-    
-    
-    public void saveRides(String filename) {
-    	
-    	String sp = System.getProperty("file.separator");
-    	
-		try {
-			File file = new File("src" + sp + "dataFiles" + sp + filename);
-			String content = "";
-			for (Ride ride: allRides) {
-				content += (String)ride.getRequestDateTime() + "|" + ride.getStartingAddress() + "|"
-						+ ride.getDestinationAddress() + "|" + ride.getCustomer() + "|"
-						+ ride.getDriver() + "|" + ride.getDistanceTraveled() + "|"
-						+ ride.getDuration() + "|" + ride.getStatus().ordinal() + "|" + ride.getRequestType().ordinal() + "|"
-						+ ride.getStartingPrice() + "|" + ride.getPricePerKm() + "|" + ride.getRideID() +"\n";
-			}
-			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-			writer.write(content);
-			writer.close();
-			
-		} catch (IOException e) {
-			System.out.println("Greska prilikom upisivanja voznji.");
-		}
-	}
     
 }

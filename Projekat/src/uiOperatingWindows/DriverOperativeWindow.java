@@ -29,6 +29,7 @@ import entities.Driver;
 import entities.TaxiService;
 import uiDataInputForms.DriverDataForm;
 import uiMainWindows.DispatcherMainWindow;
+import uiMainWindows.RideMainWindow;
 
 public class DriverOperativeWindow extends JFrame {
 		
@@ -130,7 +131,7 @@ public class DriverOperativeWindow extends JFrame {
 			ArrayList<Driver> nonDeletedDrivers = taxiSvc.getNonDeletedDrivers();
 			
 			String[] tableHeader = new String[] {"Korisni\u010Dko ime","Lozinka","Ime","Prezime",
-					"JMBG","Pol","Telefon","Adresa","Vozilo","Br.\u016Dlanske karte","Status","Plata"};
+					"JMBG","Pol","Telefon","Adresa","Vozilo","Br.\u010Dlanske karte","Status","Plata"};
 			
 			Object[][] tableData = new Object[nonDeletedDrivers.size()][tableHeader.length];
 			
@@ -254,6 +255,16 @@ public class DriverOperativeWindow extends JFrame {
 					
 					DriverOperativeWindow.this.dispose();
 					DriverOperativeWindow.this.setVisible(false);
+				}
+			});
+			ridesItem.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					DriverOperativeWindow.this.dispose();
+					DriverOperativeWindow.this.setVisible(false);
+					RideMainWindow rideNewWin = new RideMainWindow(taxiSvc, currentDispatcher);
+					rideNewWin.setVisible(true);
 				}
 			});
 			

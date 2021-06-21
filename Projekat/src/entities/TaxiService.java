@@ -50,6 +50,17 @@ public class TaxiService {
     
     
     
+    
+    
+    
+    
+    
+    public ArrayList<Ride> getAllRides() {
+		return allRides;
+	}
+    
+    
+    
     // DISPATCHERS >> 
     
     
@@ -153,7 +164,44 @@ public class TaxiService {
     
     // DRIVERS >> 
     
-    public Driver findDriver(long jmbG) {
+    public ArrayList<Driver> searchMultiCriteria(String name, String lastName, String salaryMin, String salaryMax, long carID) {
+    	loadInDrivers("Drivers.csv");
+    	ArrayList<Driver> matchingDrivers = new ArrayList<Driver>();
+    	
+    	Vehicle matchingVehicle = findVehicle(carID);
+    	
+    	double salaryMAX = Double.valueOf(salaryMax);
+    	double salaryMIN = 0;
+    	
+    	if(!salaryMin.isBlank() ) {
+    		salaryMIN = Double.valueOf(salaryMin);
+    	}
+    	
+    	for (Driver dr : allDrivers) {
+    		
+    		if( (name.equals(dr.getName()) || name.isBlank()) && (lastName.equals(dr.getLastName()) || lastName.isBlank()) && 
+    			(salaryMIN <= dr.getSalary() && salaryMAX >= dr.getSalary()) && (dr.getVehicle().equals(matchingVehicle) || matchingVehicle.equals(null)) ) {
+    			
+    			matchingDrivers.add(dr);
+    		}
+    	}
+    	return matchingDrivers;
+    }
+    
+    
+    private Vehicle findVehicle(long carID) {
+		loadInVehicles("Vehicles.csv");
+		
+		for (Vehicle v : allVehicles) {
+			if (carID == v.getCarID()) {
+				return v;
+			}
+		}
+		return null;
+	}
+    
+
+	public Driver findDriver(long jmbG) {
 
 		for(Driver dr : allDrivers) {
 			if (dr.getJmbg() == jmbG) {
@@ -180,6 +228,19 @@ public class TaxiService {
 		}
 		return nonDeletedDrList;
 	}
+    
+    public ArrayList<Driver> getNonBusyDrivers() {
+    	ArrayList<Driver> nonBusyDr = new ArrayList<Driver>();
+    	
+    	loadInDrivers("Drivers.csv");
+    	
+    	for(Driver dr : allDrivers) {
+    		if (!dr.isDeleted() && dr.getDriverStatus() == DriverStatus.values()[1]) {
+    			nonBusyDr.add(dr);
+    		}
+    	}
+		return nonBusyDr;
+    }
     
     
     
@@ -250,5 +311,92 @@ public class TaxiService {
 			System.out.println("Gre\u0161ka prilikom upisivanja voza\u016Da.");
 		}
 	}
+	
+	
+	
+	
+	// RIDES
+	
+	
+	public Ride findRide(long rideID) {
+		for (Ride ride : allRides) {
+			if (rideID == ride.getRideID() ) {
+				return ride;
+			}
+		}
+		return null;
+	}
+	
+	public void addNew(Ride ride) {
+    	allRides.add(ride);
+    }
+	
+	
+	
+	public void loadInRides(String filename) {
+    	allRides.clear();
+    	String sp = System.getProperty("file.separator");
+    	
+		try {
+			File file = new File("src" + sp + "dataFiles" + sp + filename);
+			BufferedReader reader = new BufferedReader(new FileReader(file));
+			
+			String row;
+			while ((row = reader.readLine()) != null) {
+				
+				String[] split = row.split("\\|");
+				
+				
+				String requestDateTime = split[0];
+				String startingAddress = split[1];
+				String destinationAddress = split[2];
+				Customer customer = null;
+				Driver driver = null;
+				// TODO Customer customer = findCustomer(split[3]);
+				//TODO Driver driver = findDriver(split[4]);
+				double distanceTraveled = Double.parseDouble(split[5]);
+				double duration= Double.parseDouble(split[6]);
+				RequestStatus status= RequestStatus.values()[Integer.parseInt(split[7])];
+				RequestType requestType = RequestType.values()[Integer.parseInt(split[8])];
+				double startingPrice = Double.parseDouble(split[9]);
+				double pricePerKm = Double.parseDouble(split[10]);
+				long rideID = Long.valueOf(split[11]);
+				
+				Ride ride = new Ride(requestDateTime, startingAddress, destinationAddress, customer,
+						driver, distanceTraveled, duration, status, requestType,
+						startingPrice, pricePerKm, rideID);
+				allRides.add(ride);
+				
+			}
+			reader.close();
+		} catch (IOException e) {
+			System.out.println("Gre\u0161ka prilikom \u010Ditanja podataka o vo\u017Enjama.");
+			e.printStackTrace();
+		}
+	}
     
+    
+    public void saveRides(String filename) {
+    	
+    	String sp = System.getProperty("file.separator");
+    	
+		try {
+			File file = new File("src" + sp + "dataFiles" + sp + filename);
+			String content = "";
+			for (Ride ride: allRides) {
+				content += (String)ride.getRequestDateTime() + "|" + ride.getStartingAddress() + "|"
+						+ ride.getDestinationAddress() + "|" + ride.getCustomer().getJmbg() + "|"
+						+ ride.getDriver().getJmbg() + "|" + ride.getDistanceTraveled() + "|"
+						+ ride.getDuration() + "|" + ride.getStatus().ordinal() + "|" + ride.getRequestType().ordinal() + "|"
+						+ ride.getStartingPrice() + "|" + ride.getPricePerKm() + "|" + ride.getRideID() +"\n";
+			}
+			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+			writer.write(content);
+			writer.close();
+			
+		} catch (IOException e) {
+			System.out.println("Gre\u0161ka prilikom upisivanja vo\u017Enji.");
+		}
+	}
+	
 }

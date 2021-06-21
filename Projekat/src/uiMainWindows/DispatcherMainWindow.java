@@ -6,12 +6,10 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
-import javax.swing.AbstractButton;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JTable;
-import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
@@ -51,11 +49,9 @@ public class DispatcherMainWindow extends JFrame {
 	private JMenuItem carsItem = new JMenuItem("Automobili");
 	private JMenuItem ridesItem = new JMenuItem("Vo\u017Enje");
 
-//JToolBar mainToolbar = new JToolBar(); //TODO made JTable & DefaultTableModel private
 	private JTable table;
 	private DefaultTableModel tableModel;
 	
-							//TaxiService taxiSvc
 	public DispatcherMainWindow(TaxiService taxiSvc, Dispatcher currentDispatcher) {
 		
 		this.taxiSvc = taxiSvc;
@@ -253,6 +249,16 @@ public class DispatcherMainWindow extends JFrame {
 				
 				DispatcherMainWindow.this.dispose();
 				DispatcherMainWindow.this.setVisible(false);
+			}
+		});
+		ridesItem.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				DispatcherMainWindow.this.dispose();
+				DispatcherMainWindow.this.setVisible(false);
+				RideMainWindow rideNewWin = new RideMainWindow(taxiSvc, currentDispatcher);
+				rideNewWin.setVisible(true);
 			}
 		});
 		

@@ -23,21 +23,25 @@ import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import entities.TaxiService;
-//import main.TaxiService;
 import uiDataInputForms.DispatcherDataForm;
 import uiDataInputForms.RideDataForm;
+import uiOperatingWindows.DriverOperativeWindow;
 import entities.Dispatcher;
+import entities.RequestStatus;
 import entities.Ride;
 
 	public class RideMainWindow extends JFrame {
 		
+		private Dispatcher currentDispatcher;
 		private TaxiService taxiSvc;
 		private JButton addBtn = new JButton();
 		private JButton editBtn = new JButton();
 		private JButton dltBtn = new JButton();
 		private JButton searchBtn = new JButton();
+		private JButton refreshBtn = new JButton();
 		
 		private JMenuBar mainMenu = new JMenuBar();
 		
@@ -50,16 +54,15 @@ import entities.Ride;
 		private JMenuItem carsItem = new JMenuItem("Automobili");
 		private JMenuItem ridesItem = new JMenuItem("Vo\u017Enje");
 
-	//JToolBar mainToolbar = new JToolBar();
-		JTable table;
-		DefaultTableModel tableModel;
+		private JTable table;
+		private DefaultTableModel tableModel;
 		
-								//TaxiService taxiSvc
-		public RideMainWindow() {
+		public RideMainWindow(TaxiService taxiSvc, Dispatcher currentDispatcher) {
 			
-			//this.taxiSvc = taxiSvc;
+			this.currentDispatcher = currentDispatcher;
+			this.taxiSvc = taxiSvc;
 			
-			this.setTitle("Vo\u017Enje :: Telefon");
+			this.setTitle("Dispe\u010Der :: " + currentDispatcher.getUsername() );
 			this.setSize(1100, 300);
 			this.setLocationRelativeTo(null);
 			this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -101,6 +104,9 @@ import entities.Ride;
 			ImageIcon searchIcon = new ImageIcon(getClass().getResource("/icons/search.gif"));
 			searchBtn.setIcon(searchIcon);
 			
+			ImageIcon refreshIcon = new ImageIcon(getClass().getResource("/icons/refresh.gif"));
+			refreshBtn.setIcon(refreshIcon);
+			
 			//TODO
 			/*addBtn.setSize(60, 20);
 			editBtn.setSize(60, 20);
@@ -113,6 +119,8 @@ import entities.Ride;
 			buttonBox.add(dltBtn);
 			buttonBox.add(Box.createVerticalStrut(3));
 			buttonBox.add(searchBtn);
+			buttonBox.add(Box.createVerticalStrut(3));
+			buttonBox.add(refreshBtn);
 			/*mainToolbar.setFloatable(false);
 			mainToolbar.add(addBtn);
 			mainToolbar.add(editBtn);
@@ -120,26 +128,32 @@ import entities.Ride;
 			
 			//TODO mainToolbar.setBounds(0, 600, 1200, 150);*/
 			this.add(buttonBox, BorderLayout.WEST);
-
-			//TODO taxiSvc.getAllDispatchers();
-			ArrayList<Ride> rides = Ride.getAllRides();
 			
-			String[] tableHeader = new String[] {"ID Vo\017Enje","Status","Vreme zahteva","Po\010Detak","Destinacija",
+			taxiSvc.loadInRides("Rides.csv");
+			ArrayList<Ride> rides = taxiSvc.getAllRides();
+			
+			String[] tableHeader = new String[] {"ID Vo\u017Enje","Status","Vreme zahteva","Po\u010Detak","Destinacija",
 					"Trajanje","Kilometra\u017Ea","Mu\u0161terija","Voza\u010D"};
 			
 			Object[][] tableData = new Object[rides.size()][tableHeader.length];
+			
+/* Testni Datum */			Calendar today = Calendar.getInstance();
+			today.set(Calendar.HOUR_OF_DAY, 0);
 			
 			for (int i = 0; i < rides.size(); i++) {
 				Ride ride = rides.get(i);
 				tableData[i][0] = ride.getRideID();
 				tableData[i][1] = ride.getStatus();
-				tableData[i][2] = ride.getRequestDateTime().toString();
+				tableData[i][2] = null;
+				//TODO tableData[i][2] = ride.getRequestDateTime().toString();
 				tableData[i][3] = ride.getStartingAddress();
 				tableData[i][4] = ride.getDestinationAddress();
 				tableData[i][5] = ride.getDuration();
 				tableData[i][6] = ride.getDistanceTraveled();
-				tableData[i][7] = ride.getCustomer();
-				tableData[i][8] = ride.getDriver();
+				tableData[i][7] = null;
+				tableData[i][8] = null;
+				//TODO tableData[i][7] = ride.getCustomer();
+				//TODO tableData[i][8] = ride.getDriver();
 			}
 			
 			tableModel = new DefaultTableModel(tableData, tableHeader);
@@ -175,18 +189,49 @@ import entities.Ride;
 					if(row == -1) {
 						JOptionPane.showMessageDialog(null, "Molimo, pre izmene ozna\u010Dite red u tabeli!", "Pa\u017Enja", JOptionPane.WARNING_MESSAGE);
 					}else {
-						String rideID = tableModel.getValueAt(row, 0).toString();
-						//TODO Ride ride = findRide(rideID);
-						/*if(ride == null) {
-							JOptionPane.showMessageDialog(null, "Vo\u017Enja sa tim ID ne postoji ili je obrisana iz sistema.", "Nepostoje\u0107a vo\u017Enja", JOptionPane.INFORMATION_MESSAGE);
+						long rideID = Long.valueOf(tableModel.getValueAt(row, 0).toString());
+						Ride ride = taxiSvc.findRide(rideID);
+						if (ride == null || ride.getStatus() != RequestStatus.values()[0]) {
+							JOptionPane.showMessageDialog(null, "Vo\u017Enja sa tim ID je bila dodeljena ili ne postoji.", "Nepostoje\u0107a vo\u017Enja", JOptionPane.INFORMATION_MESSAGE);
 						}else {
-							*/
-							RideDataForm rdf = new RideDataForm(ride);
+							
+							RideDataForm rdf = new RideDataForm(taxiSvc, ride);
 							rdf.setVisible(true);
 						}
 					}
 				}
-			);
+			});
+			dispatchersItem.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					RideMainWindow.this.dispose();
+					RideMainWindow.this.setVisible(false);
+					DispatcherMainWindow dpNewWin = new DispatcherMainWindow(taxiSvc, currentDispatcher);
+					dpNewWin.setVisible(true);
+				}
+			});
+			driversItem.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					RideMainWindow.this.dispose();
+					RideMainWindow.this.setVisible(false);
+					DriverOperativeWindow drNewWin = new DriverOperativeWindow(taxiSvc, currentDispatcher);
+					drNewWin.setVisible(true);
+				}
+			});
+			refreshBtn.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					RideMainWindow rideNewWin = new RideMainWindow (taxiSvc, currentDispatcher);
+					rideNewWin.setVisible(true);
+
+					RideMainWindow.this.dispose();
+					RideMainWindow.this.setVisible(false);
+					
+				}
+			});
 			/*dltBtn.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -210,11 +255,5 @@ import entities.Ride;
 					}
 				}
 			});*/
-		}
-		
-		
-		public static void main(String[] args) {
-			RideMainWindow rideWin = new RideMainWindow();
-			rideWin.setVisible(true);
 		}
 	}
