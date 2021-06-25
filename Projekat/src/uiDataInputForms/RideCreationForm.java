@@ -123,8 +123,7 @@ public class RideCreationForm extends JFrame {
 		confirmBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO 
-				String warningMsg;
+		
 				if(selectedRide.equals(null)) {
 					
 					String startingAddress = txtStartingAddress.getText();
@@ -136,7 +135,7 @@ public class RideCreationForm extends JFrame {
 						Ride newRide = new Ride(new SimpleDateFormat("dd.MM.yyyy").format(new GregorianCalendar().getTime()), startingAddress, destination, currentCustomer,
 								null, 0, 0, RequestStatus.values()[0], RequestType.values()[0],
 // TODO
-						TaxiService.STARTINGPRICE, TaxiService.PRICEPERKM, taxiSvc.generateNew("rideID");
+						TaxiService.STARTINGPRICE, TaxiService.PRICEPERKM, taxiSvc.generateNewRideID(), 0);
 						taxiSvc.addNew(newRide);
 					}
 				}
@@ -148,7 +147,7 @@ public class RideCreationForm extends JFrame {
 						JOptionPane.showMessageDialog(RideCreationForm.this, "Molimo, ocenite vo\u017Enju ocenom 1-5!", "Pa\u017Enja", JOptionPane.WARNING_MESSAGE);
 					else {
 						selectedRide.setRating(Integer.parseInt(rating));
-						selectedRide.getDriver().calculateAvgRating();
+						selectedRide.getDriver().setAvgRating(taxiSvc.calculateAvgRating(selectedRide.getDriver()));
 						taxiSvc.saveDrivers("Drivers.csv");
 					}
 				}

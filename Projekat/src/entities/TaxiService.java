@@ -621,7 +621,7 @@ public class TaxiService {
 	
 	
 	
-	// TAXi SERViCE TODO
+	// TAXi SERViCE
 	
 	 public static void loadInTaxiSvc(String filename) {
 	    	
@@ -693,6 +693,28 @@ public class TaxiService {
 		}
 		// TODO :   
 		return lastEl;
+	}
+	
+	
+	
+	public long generateNewRideID() {
+    	
+    	long newRideID = allRides.get(0).getRideID() +1;
+		return newRideID;
+	}
+	
+	public double calculateAvgRating(Driver currentDriver) {
+		
+		int ridesTotal = 0;
+		double ratingSum = 0;
+		int rate;
+		
+		for(Ride r : allRides) {
+			if(r.getDriver().equals(currentDriver) && (rate = r.getRating()) != 0) {
+				ridesTotal += 1;
+				ratingSum += rate;
+			}
+		}return ratingSum / ridesTotal;
 	}
 
 	

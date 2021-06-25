@@ -15,6 +15,7 @@ public class Driver extends Employee {
     private Vehicle vehicle;
     private DriverStatus driverStatus;
     private long drivingLicence;
+    private double avgRating;
     
     public Driver() {
     	super();
@@ -22,6 +23,7 @@ public class Driver extends Employee {
 		this.vehicle = null;
 		this.driverStatus = DriverStatus.values()[1];
 		this.drivingLicence = 0;
+		this.avgRating = 0;
     }
     
     public Driver(String username, String password, String name, String lastName, long jmbg, Gender gender,
@@ -33,11 +35,20 @@ public class Driver extends Employee {
 		this.vehicle = vehicle;
 		this.driverStatus = driverStatus;
 		this.drivingLicence = drivingLicence;
+		this.avgRating = 0;
 	}
     
     // GETTERS & SETTERS
     
-    public long getDrivingLicence() {
+    public double getAvgRating() {
+		return avgRating;
+	}
+
+	public void setAvgRating(double avgRating) {
+		this.avgRating = avgRating;
+	}
+
+	public long getDrivingLicence() {
 		return drivingLicence;
 	}
 
