@@ -1,14 +1,8 @@
 package entities;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.*;
 
-public class Ride {
+public class Ride implements Comparable <Ride> {
 
 	ArrayList<Ride> allRides = new ArrayList<Ride>();
 	private String requestDateTime;
@@ -23,26 +17,28 @@ public class Ride {
     private double startingPrice;
     private double pricePerKm;
     private long RideID;
+    private int rating;
 	
     public Ride() {
     	super();
 		this.requestDateTime = "";
 		this.startingAddress = "";
 		this.destinationAddress = "";
-		this.customer = new Customer();
-		this.driver = new Driver();
+		this.customer = null;
+		this.driver = null;
 		this.distanceTraveled = 0;
 		this.duration = 0;
-		this.status = RequestStatus.CREATED;
+		this.status = RequestStatus.values()[0];
 		this.requestType = RequestType.values()[1];
 		this.startingPrice = 0;
 		this.pricePerKm = 0;
-		RideID = 0;
+		this.RideID = 0;
+		this.rating = 0;
     }
 
     public Ride(String requestDateTime, String startingAddress, String destinationAddress, Customer customer,
 			Driver driver, double distanceTraveled, double duration, RequestStatus status, RequestType requestType,
-			double startingPrice, double pricePerKm, long rideID) {
+			double startingPrice, double pricePerKm, long rideID, int rating) {
 		super();
 		this.requestDateTime = requestDateTime;
 		this.startingAddress = startingAddress;
@@ -56,11 +52,20 @@ public class Ride {
 		this.startingPrice = startingPrice;
 		this.pricePerKm = pricePerKm;
 		RideID = rideID;
+		this.rating = rating;
 	}
     
     // GETTERS & SETTERS
     
     
+	public int getRating() {
+		return rating;
+	}
+
+	public void setRating(int rating) {
+		this.rating = rating;
+	}
+
 	public String getRequestDateTime() {
 		return requestDateTime;
 	}
@@ -188,6 +193,12 @@ public class Ride {
 				+ ", distanceTraveled=" + distanceTraveled + ", duration=" + duration + ", status=" + status
 				+ ", requestType=" + requestType + ", startingPrice=" + startingPrice + ", pricePerKm=" + pricePerKm
 				+ ", RideID=" + RideID + "]";
+	}
+	
+	
+	@Override
+	public int compareTo(Ride r) {
+		return Long.compare(r.getRideID(), this.getRideID());
 	}
     
     //FILE IO

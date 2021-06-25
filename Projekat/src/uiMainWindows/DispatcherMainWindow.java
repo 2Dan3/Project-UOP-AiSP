@@ -37,6 +37,7 @@ public class DispatcherMainWindow extends JFrame {
 	private JButton dltBtn = new JButton();
 	private JButton searchBtn = new JButton();
 	private JButton refreshBtn = new JButton();
+	private JButton generateReportBtn = new JButton();
 	
 	private JMenuBar mainMenu = new JMenuBar();
 	
@@ -101,6 +102,9 @@ public class DispatcherMainWindow extends JFrame {
 		ImageIcon refreshIcon = new ImageIcon(getClass().getResource("/icons/refresh.gif"));
 		refreshBtn.setIcon(refreshIcon);
 		
+		ImageIcon reportsIcon = new ImageIcon(getClass().getResource("/icons/report.gif"));
+		generateReportBtn.setIcon(reportsIcon);
+		
 		//TODO
 		/*addBtn.setSize(60, 20);
 		editBtn.setSize(60, 20);
@@ -115,6 +119,8 @@ public class DispatcherMainWindow extends JFrame {
 		buttonBox.add(searchBtn);
 		buttonBox.add(Box.createVerticalStrut(3));
 		buttonBox.add(refreshBtn);
+		buttonBox.add(Box.createVerticalStrut(3));
+		buttonBox.add(generateReportBtn);
 		/*mainToolbar.setFloatable(false);
 		mainToolbar.add(addBtn);
 		mainToolbar.add(editBtn);
@@ -122,7 +128,7 @@ public class DispatcherMainWindow extends JFrame {
 		
 		//TODO mainToolbar.setBounds(0, 600, 1200, 150);*/
 		this.add(buttonBox, BorderLayout.WEST);
-
+		
 		//TODO taxiSvc.getAllDispatchers();
 		ArrayList<Dispatcher> ldispatchers = taxiSvc.getNonDeletedDispatchers();
 		
@@ -239,6 +245,13 @@ public class DispatcherMainWindow extends JFrame {
 				DispatcherMainWindow.this.dispose();
 				DispatcherMainWindow.this.setVisible(false);
 				
+			}
+		});
+		generateReportBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				SumReportGenerator srg = new SumReportGenerator(taxiSvc);
+				srg.setVisible(true);
 			}
 		});
 		driversItem.addActionListener(new ActionListener() {

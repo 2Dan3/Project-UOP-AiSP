@@ -14,9 +14,13 @@ import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import entities.Customer;
 import entities.Dispatcher;
+import entities.Driver;
 import entities.TaxiService;
+import uiMainWindows.CustomerMainWindow;
 import uiMainWindows.DispatcherMainWindow;
+import uiMainWindows.DriverMainWindow;
 
 //import entities.Roles;
 
@@ -82,6 +86,10 @@ public class LoginUI extends JFrame {
 			add(loginButton);
 			
 			getRootPane().setDefaultButton(loginButton);
+			
+			// Testni
+			userText.setText("katarinaV");
+			passwordText.setText("lozinka099");
 						
 	
 		}
@@ -107,6 +115,7 @@ public class LoginUI extends JFrame {
 				
 				String username = userText.getText().trim();
 				String pass = new String(passwordText.getPassword());
+				
 				boolean found = false;
 				
 				if (username.equals("") || pass.equals(""))
@@ -114,7 +123,7 @@ public class LoginUI extends JFrame {
 				else {
 					//TODO Uprostiti, staviti u Login funkciju u drugi fajl, zatim pozvati odavde :
 					  
-					if(rolesComboBox.getSelectedItem() == Roles.DISPEÈER) {//TODO videti zasto je error kod poziva Dispatcher.getNonDeletedDispatchers() ! ! ! 
+					if(rolesComboBox.getSelectedItem() == Roles.values()[2]) {//TODO videti zasto je error kod poziva Dispatcher.getNonDeletedDispatchers() ! ! ! 
 						for (Dispatcher user : taxiSvc.getNonDeletedDispatchers()) {
 							if(username.equals(user.getUsername()) && pass.equals(user.getPassword())) {
 								found = true;
@@ -125,42 +134,33 @@ public class LoginUI extends JFrame {
 								break;
 							}
 						}
-						//System.out.println("undel" +taxiSvc.getNonDeletedDispatchers());
-						//System.out.println("  all" +taxiSvc.getAllDispatchers());
+//						System.out.println("undel" +taxiSvc.getNonDeletedDispatchers());
+//						System.out.println("  all" +taxiSvc.getAllDispatchers());
 						
-					}/*else if(rolesComboBox.getSelectedItem() == Roles.VOZAÈ) {
-						for (Driver user : getAllDrivers()) {
-							if(user.equals(user.getUsername()) && pass.equals(user.getPassword())) {
+					}else if(rolesComboBox.getSelectedItem() == Roles.values()[1]) {
+						for (Driver user : taxiSvc.getNonDeletedDrivers()) {
+							if(username.equals(user.getUsername()) && pass.equals(user.getPassword())) {
 								found = true;
-								DriverMainWindow dpMainWin = new DriverMainWindow();
+								DriverMainWindow drMainWin = new DriverMainWindow(taxiSvc, user);
+								drMainWin.setVisible(true);
+								LoginUI.this.dispose();
+								LoginUI.this.setVisible(false);
+								break;
 							}
 						}
-					}else if(rolesComboBox.getSelectedItem() == Roles.MUŠTERIJA) {
-						for (Customer user : getAllCustomers()) {
-							if(user.equals(user.getUsername()) && pass.equals(user.getPassword())) {
+					}else if(rolesComboBox.getSelectedItem() == Roles.values()[0]) {
+						for (Customer user : taxiSvc.getNonDeletedCustomers()) {
+							if(username.equals(user.getUsername()) && pass.equals(user.getPassword())) {
 								found = true;
-								CustomerMainWindow dpMainWin = new CustomerMainWindow();
+								CustomerMainWindow customerMainWin = new CustomerMainWindow(taxiSvc, user);
+								customerMainWin.setVisible(true);
+								LoginUI.this.dispose();
+								LoginUI.this.setVisible(false);
+								break;
 							}
-						}
-					}*/
-					
-					
-					
-					/*for (String l : niz) {
-						if (username.equals(l) && pass.equals(l)) {
-							
-							success.setText("Prijava :: uspe\u0161na !");
-//							frame.setVisible(false);
-							//Driver.showDriverMenu();
-//							Dispatcher.showDispatcherMenu(frame);
-							// Customer.showCustomerMenu();
-//							frame.setVisible(false);
-							found = true;
-							
-							break;
 						}
 					}
-					*/		
+							
 					if (found == false) 
 							JOptionPane.showMessageDialog (null, "Neispravno korisni\u010Dko ime ili lozinka!", "Gre\u0161ka", JOptionPane.ERROR_MESSAGE);
 				}

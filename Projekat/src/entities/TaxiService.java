@@ -10,15 +10,15 @@ import java.util.*;
 
 public class TaxiService {
 
-    private static int TAXIDNUM;
+    public static String TAXIDNUM;
 
-    private static String LOCATION;
+    public static String LOCATION;
 
-    private static String NAME;
+    public static String NAME;
 
-    private static double STARTINGPRICE;
+    public static double STARTINGPRICE;
 
-    private static double PRICEPERKM;
+    public static double PRICEPERKM;
  
     private ArrayList <Dispatcher> allDispatchers;
     
@@ -37,10 +37,13 @@ public class TaxiService {
     	this.allCustomers = new ArrayList<Customer>();
     	this.allRides = new ArrayList<Ride>();
     	this.allVehicles = new ArrayList<Vehicle>();
+    	
+    	loadInTaxiSvc("TaxiService.csv");
+    	System.out.println(TAXIDNUM+ LOCATION+ NAME+ STARTINGPRICE+ PRICEPERKM);
     }
     
  // GETTERS & SETTERS
-    //TODO
+
     public ArrayList<Dispatcher> getAllDispatchers() {
     	return allDispatchers;
 	}
@@ -48,12 +51,13 @@ public class TaxiService {
     	return allDrivers;
     }
     
+    public ArrayList<Customer> getAllCustomers() {
+    	return allCustomers;
+    }
     
-    
-    
-    
-    
-    
+    public ArrayList<Vehicle> getAllVehicles() {
+		return allVehicles;
+	}
     
     public ArrayList<Ride> getAllRides() {
 		return allRides;
@@ -141,6 +145,8 @@ public class TaxiService {
     
     public void saveDispatchers(String filename) {
     	
+    	Collections.sort(allDispatchers);
+    	
     	String sp = System.getProperty("file.separator");
     	
 		try {
@@ -201,16 +207,21 @@ public class TaxiService {
 	}
     
 
-	public Driver findDriver(long jmbG) {
-
+	public Driver findDriver(String JMBG) {
+		
+		if(JMBG.trim().isBlank()) return null;
+		
+		long jmbg = Long.valueOf(JMBG);
+		
 		for(Driver dr : allDrivers) {
-			if (dr.getJmbg() == jmbG) {
+			if (dr.getJmbg() == jmbg) {
 				return dr;
 			}
 		}
 		return null;
 	}
 
+	
 	public void addNew(Driver dr) {
     	allDrivers.add(dr);
     }
@@ -269,12 +280,13 @@ public class TaxiService {
 				String address = split[7];
 				double salary = Double.parseDouble(split[8]);
 				String membershipCardNum = split[9];
-// TODO				Vehicle vehicle = findVehicle(Integer.parseInt(split[10]));
-				Vehicle vehicle = null;
+				Vehicle vehicle = findVehicle(Long.parseLong(split[10]));
+//				Vehicle vehicle = null;
 				DriverStatus driverStatus = DriverStatus.values()[Integer.parseInt(split[11])];
 				boolean deleted = Boolean.parseBoolean(split[12]);
+				long drivingLicence = Long.valueOf(split[13]);
 				
-				Driver driver = new Driver(username, password, name, lastName, jmbg, gender, phoneNum, address, membershipCardNum, vehicle, driverStatus, salary, deleted);
+				Driver driver = new Driver(username, password, name, lastName, jmbg, gender, phoneNum, address, membershipCardNum, vehicle, driverStatus, salary, deleted, drivingLicence);
 				allDrivers.add(driver);
 				
 			}
@@ -291,17 +303,22 @@ public class TaxiService {
 
 	public void saveDrivers(String filename) {
     	
+		Collections.sort(allDrivers);
+		
     	String sp = System.getProperty("file.separator");
     	
 		try {
 			File file = new File("src" + sp + "dataFiles" + sp + filename);
 			String content = "";
 			for (Driver driver: allDrivers) {
+				String carId = "0";
+				if(driver.getVehicle() != null) carId = String.valueOf(driver.getVehicle().getCarID());
+					
 				content += driver.getUsername() + "|" + driver.getPassword() + "|"
 						+ driver.getName() + "|" + driver.getLastName()+ "|" + driver.getJmbg() + "|"
 						+ driver.getGender().ordinal() + "|" + driver.getPhoneNum() + "|" + driver.getAddress() + "|"
-						+ driver.getSalary() + "|" + driver.getMembershipCardNum() + "|" + null + "|"
-						+ driver.getDriverStatus().ordinal() + "|" + driver.isDeleted() +"\n";
+						+ driver.getSalary() + "|" + driver.getMembershipCardNum() + "|" + carId + "|"
+						+ driver.getDriverStatus().ordinal() + "|" + driver.isDeleted() + "|" + driver.getDrivingLicence() +"\n";
 			}
 			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
 			writer.write(content);
@@ -346,14 +363,13 @@ public class TaxiService {
 				
 				String[] split = row.split("\\|");
 				
-				
 				String requestDateTime = split[0];
 				String startingAddress = split[1];
 				String destinationAddress = split[2];
-				Customer customer = null;
-				Driver driver = null;
-				// TODO Customer customer = findCustomer(split[3]);
-				//TODO Driver driver = findDriver(split[4]);
+//				Customer customer = null;
+//				Driver driver = null;
+				Customer customer = findCustomer(split[3]);
+				Driver driver = findDriver(split[4]);
 				double distanceTraveled = Double.parseDouble(split[5]);
 				double duration= Double.parseDouble(split[6]);
 				RequestStatus status= RequestStatus.values()[Integer.parseInt(split[7])];
@@ -361,10 +377,11 @@ public class TaxiService {
 				double startingPrice = Double.parseDouble(split[9]);
 				double pricePerKm = Double.parseDouble(split[10]);
 				long rideID = Long.valueOf(split[11]);
+				int rating = Integer.valueOf(split[12]);
 				
 				Ride ride = new Ride(requestDateTime, startingAddress, destinationAddress, customer,
 						driver, distanceTraveled, duration, status, requestType,
-						startingPrice, pricePerKm, rideID);
+						startingPrice, pricePerKm, rideID, rating);
 				allRides.add(ride);
 				
 			}
@@ -376,19 +393,31 @@ public class TaxiService {
 	}
     
     
-    public void saveRides(String filename) {
+    
+
+	public void saveRides(String filename) {
     	
+		Collections.sort(allRides);
+		
     	String sp = System.getProperty("file.separator");
+    	String driverJmbg;
     	
 		try {
 			File file = new File("src" + sp + "dataFiles" + sp + filename);
 			String content = "";
 			for (Ride ride: allRides) {
+				
+				driverJmbg = "";
+				if(ride.getDriver() != null)	driverJmbg = String.valueOf(ride.getDriver().getJmbg());
+					
+				
 				content += (String)ride.getRequestDateTime() + "|" + ride.getStartingAddress() + "|"
 						+ ride.getDestinationAddress() + "|" + ride.getCustomer().getJmbg() + "|"
-						+ ride.getDriver().getJmbg() + "|" + ride.getDistanceTraveled() + "|"
+//						+ ride.getDestinationAddress() + "|" + null + "|"
+						+ driverJmbg + "|" + ride.getDistanceTraveled() + "|"
+//						+ null + "|" + ride.getDistanceTraveled() + "|"
 						+ ride.getDuration() + "|" + ride.getStatus().ordinal() + "|" + ride.getRequestType().ordinal() + "|"
-						+ ride.getStartingPrice() + "|" + ride.getPricePerKm() + "|" + ride.getRideID() +"\n";
+						+ ride.getStartingPrice() + "|" + ride.getPricePerKm() + "|" + ride.getRideID() + "|" + ride.getRating() + "\n";
 			}
 			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
 			writer.write(content);
@@ -398,5 +427,273 @@ public class TaxiService {
 			System.out.println("Gre\u0161ka prilikom upisivanja vo\u017Enji.");
 		}
 	}
+    
+    
+    
+    // VEHICLES
+    
+    public ArrayList<Vehicle> searchMultiCriteria(String make, String model, int yearOfMake, String registrationNum, String taxiVehicleNum) {
+    	loadInVehicles("Vehicles.csv");
+    	ArrayList<Vehicle> matchingVehicles = new ArrayList<Vehicle>();
+    	
+    	for (Vehicle v : allVehicles) {
+    		
+    		if( (make.equals(v.getMake()) || make.isBlank()) && (model.equals(v.getModel()) || model.isBlank()) && 
+    			(yearOfMake == v.getYearOfMake() || yearOfMake == 0) && (registrationNum.equals(v.getRegistrationNum()) || registrationNum.isBlank()) && (taxiVehicleNum.equals(v.getTaxiVehicleNum()) || taxiVehicleNum.isBlank())) {
+    			
+    			matchingVehicles.add(v);
+    		}
+    	}
+    	return matchingVehicles;
+    }
+    
+    
+    // FILE IO
+    
+    public void loadInVehicles(String filename) {
+    	allVehicles.clear();
+    	String sp = System.getProperty("file.separator");
+    	
+		try {
+			File file = new File("src" + sp + "dataFiles" + sp + filename);
+		
+			BufferedReader reader = new BufferedReader(new FileReader(file));
+			
+			String row;
+			while ((row = reader.readLine()) != null) {
+				
+				String[] split = row.split("\\|");
+				
+				
+				String make = split[0];
+				String model = split[1];
+				int yearOfMake = Integer.parseInt(split[2]);
+				String registrationNum = split[3];
+				String taxiVehicleNum = split[4];
+				VehicleType type = VehicleType.values()[Integer.parseInt(split[5])];
+				boolean hasDriver = Boolean.parseBoolean(split[6]);
+				String VINNum= split[7];
+				boolean deleted = Boolean.parseBoolean(split[8]);
+				long carID = Long.valueOf(split[9]);
+				String engineNum = split[10];
+				String lastRegistrationDate = split[11];
+				InsuranceType insurance = InsuranceType.values()[Integer.parseInt(split[12])];
+				int seats = Integer.parseInt(split[13]);
+				
+				Vehicle vehicle1 = new Vehicle(make, model, yearOfMake, registrationNum, taxiVehicleNum,
+					 type, hasDriver, VINNum, deleted, carID, engineNum, lastRegistrationDate, insurance, seats);
+				allVehicles.add(vehicle1);
+
+			}
+			reader.close();
+			
+		} catch (IOException e) {
+			System.out.println("Gre\u0161ka prilikom \u010Ditanja podataka o vozilima.");
+			e.printStackTrace();
+		}
+	}
+    
+    
+    public void saveVehicles(String filename) {
+    	
+    	Collections.sort(allVehicles);
+    	
+    	String sp = System.getProperty("file.separator");
+    	
+		try {
+			File file = new File("src" + sp + "dataFiles" + sp + filename);
+		
+			String content = "";
+			for (Vehicle vehicle: allVehicles) {
+				content += vehicle.getMake() + "|" + vehicle.getModel() + "|"
+						+ vehicle.getYearOfMake() + "|" + vehicle.getRegistrationNum() + "|"
+						+ vehicle.getTaxiVehicleNum() + "|" + vehicle.getType().ordinal() + "|"
+						+ vehicle.getHasDriver() + "|" + vehicle.getVINNum() + "|" + vehicle.isDeleted()
+						+ "|" + vehicle.getCarID() + "|" + vehicle.getEngineNum() + "|" 
+						+ vehicle.getLastRegistrationDate() + "|" + vehicle.getInsurance().ordinal() +"|" + vehicle.getSeats() +"\n";
+			}
+			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+			writer.write(content);
+			writer.close();
+			
+		} catch (IOException e) {
+			System.out.println("Gre\u0161ka prilikom upisivanja vozila.");
+		}
+	}
+    
+    
+    
+    // CUSTOMERS
+    
+	public ArrayList<Customer> getNonDeletedCustomers() {
+		ArrayList<Customer> nonDeletedCustomerList = new ArrayList<Customer>();
+		
+		loadInCustomers("Customers.csv");
+
+		for(Customer c : allCustomers) {
+
+		    if (!c.isDeleted())
+		    	nonDeletedCustomerList.add(c);
+		}
+		return nonDeletedCustomerList;
+	}
+	
+	
+	private Customer findCustomer(String JMBG) {
+    	if(JMBG.trim().isBlank()) return null;
+		
+    	long jmbg = Long.valueOf(JMBG);
+    	
+    	for(Customer customer : allCustomers) {
+    		if (customer.getJmbg() == jmbg) {
+    			return customer;
+    		}
+    	}
+		return null;
+	}
+	
+	
+	
+	// FILE IO
+	
+	public void loadInCustomers(String filename) {
+    	allCustomers.clear();
+    	String sp = System.getProperty("file.separator");
+    	
+		try {
+			File file = new File("src" + sp + "dataFiles" + sp + filename);
+
+			BufferedReader reader = new BufferedReader(new FileReader(file));
+			
+			String row;
+			while ((row = reader.readLine()) != null) {
+				
+				String[] split = row.split("\\|");
+				
+				
+				String username = split[0];
+				String password = split[1];
+				String name= split[2];
+				String lastName= split[3];
+				long jmbg = Long.parseLong(split[4]);
+				Gender gender = Gender.values()[Integer.parseInt(split[5])];
+				String phoneNum = split[6];
+				String address = split[7];
+				boolean deleted = Boolean.parseBoolean(split[8]);
+				
+				Customer customer = new Customer(username, password, name, lastName, jmbg, gender, phoneNum, address, deleted);
+				allCustomers.add(customer);
+
+			}
+			reader.close();
+		} catch (IOException e) {
+			System.out.println("Gre\u0161ka prilikom \u010Ditanja podataka o klijentima.");
+			e.printStackTrace();
+		}
+	}
+
+
+	public void saveCustomers(String filename) {
+    	
+		Collections.sort(allCustomers);
+		
+    	String sp = System.getProperty("file.separator");
+    	
+		try {
+			File file = new File("src" + sp + "dataFiles" + sp + filename);
+		
+			String content = "";
+			for (Customer customer: allCustomers) {
+				content +=
+						  customer.getUsername() + "|" + customer.getPassword() + "|"
+						+ customer.getName() + "|" + customer.getLastName()+ "|" + customer.getJmbg() + "|"
+						+ customer.getGender().ordinal() + "|" + customer.getPhoneNum() + "|" + customer.getAddress() + "|" + customer.isDeleted() +"\n";
+			}
+			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+			writer.write(content);
+			writer.close();
+			
+		} catch (IOException e) {
+			System.out.println("Gre\u0161ka prilikom pisanja podataka o taksi slu\u017Ebi.");
+		}
+	}
+	
+	
+	
+	
+	// TAXi SERViCE TODO
+	
+	 public static void loadInTaxiSvc(String filename) {
+	    	
+	    	String sp = System.getProperty("file.separator");
+	    	
+			try {
+				File file = new File("src" + sp + "dataFiles" + sp + filename);
+			
+				BufferedReader reader = new BufferedReader(new FileReader(file));
+				
+				String row;
+				while ((row = reader.readLine()) != null) {
+					
+					String[] split = row.split("\\|");
+					
+					TAXIDNUM = split[0];
+					LOCATION = split[1];
+					NAME = split[2];
+					STARTINGPRICE = Double.parseDouble(split[3]);
+					PRICEPERKM = Double.parseDouble(split[4]);
+					
+					
+				}
+				reader.close();
+			} catch (IOException e) {
+				System.out.println("Gre\u0161ka prilikom \u010Ditanja podataka o taksi slu\u017Ebi.");
+				e.printStackTrace();
+			}
+		}
+
+	public ArrayList<Ride> getOngoingRides() {
+		loadInRides("Rides.csv");
+		
+		ArrayList<Ride> rides = new ArrayList<Ride>();
+		for(Ride ride : allRides) {
+			if(ride.getStatus() != RequestStatus.values()[5]) {
+				rides.add(ride);
+			}
+		}
+		return rides;
+	}
+
+	public ArrayList<Ride> getAllCurrentDriverRides(Driver currentDriver) {
+		
+		loadInRides("Rides.csv");
+		ArrayList<Ride> rides = new ArrayList<Ride>();
+		
+		for(Ride ride : allRides) {
+			if(ride.getDriver()==currentDriver) {
+				rides.add(ride);
+			}
+		}
+		return rides;
+	}
+	
+	private static int binarySearchId(long id, List<User> allUsers) {
+		
+		int firstEl = 0;
+		int lastEl = allUsers.size() -1;
+		
+		while(lastEl >= firstEl) {
+			
+			
+			int midEl = (lastEl - firstEl) /2  +firstEl;
+			
+			if(allUsers.get(midEl).getJmbg() == id)	return midEl;
+			
+			if(allUsers.get(midEl).getJmbg() < id)	firstEl = midEl +1;
+		}
+		// TODO :   
+		return lastEl;
+	}
+
 	
 }

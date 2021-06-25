@@ -14,27 +14,38 @@ public class Driver extends Employee {
 	private String membershipCardNum;
     private Vehicle vehicle;
     private DriverStatus driverStatus;
+    private long drivingLicence;
     
     public Driver() {
     	super();
     	this.membershipCardNum = "";
 		this.vehicle = null;
 		this.driverStatus = DriverStatus.values()[1];
+		this.drivingLicence = 0;
     }
     
     public Driver(String username, String password, String name, String lastName, long jmbg, Gender gender,
-			String phoneNum, String address, String membershipCardNum, Vehicle vehicle, DriverStatus driverStatus, double salary, boolean deleted) {
+			String phoneNum, String address, String membershipCardNum, Vehicle vehicle, DriverStatus driverStatus, double salary, boolean deleted, long drivingLicence) {
 		super(username, password, name, lastName, jmbg, gender,
 				 phoneNum, address, salary, deleted);
 
 		this.membershipCardNum = membershipCardNum;
 		this.vehicle = vehicle;
 		this.driverStatus = driverStatus;
+		this.drivingLicence = drivingLicence;
 	}
     
     // GETTERS & SETTERS
     
-    public ArrayList<Driver> getAllDrivers() {
+    public long getDrivingLicence() {
+		return drivingLicence;
+	}
+
+	public void setDrivingLicence(long drivingLicence) {
+		this.drivingLicence = drivingLicence;
+	}
+
+	public ArrayList<Driver> getAllDrivers() {
 		return allDrivers;
 	}
 
@@ -105,125 +116,7 @@ public class Driver extends Employee {
         return;
     }
 */    
-    public static void showAllDrivers() {
-    	
-    	for (Driver dr : allDrivers) {
-    		System.out.println(dr);
-    	}
-    	
-    }
-    
-    private Vehicle findVehicle(int vin) {
 
-    	for(Vehicle v: Vehicle.allVehicles) {
-    		if(v.getVINNum() == vin)
-    			return v;
-    	}return null;
-	}
-    
-    public static void addNewDriver() {
-    	Scanner sc = new Scanner(System.in);
-    	
-	    	System.out.println("Postavite korisnicko ime >> ");
-		    	String username = sc.nextLine();
-	    	System.out.println("Postavite lozinku >> ");
-		    	String password = sc.nextLine();
-	    	System.out.println("Ime >> ");
-		    	String name = sc.nextLine();
-	    	System.out.println("Prezime >> ");
-		    	String lastName = sc.nextLine();
-	    	System.out.println("JMBG >> ");
-		    	long jmbg = Long.parseLong(sc.nextLine());
-	    	System.out.println("Pol [0 - ZENSKI   1 - MUSKI] >> ");
-		    	int g = Integer.parseInt(sc.nextLine());
-		    	Gender gender = Gender.values()[g];
-	    	System.out.println("Telefon >> ");
-		    	String phone = sc.nextLine();
-	    	System.out.println("Adresa >> ");
-		    	String address = sc.nextLine();
-	    	System.out.println("Plata >> ");
-	    		double salary = Double.parseDouble(sc.nextLine());
-			System.out.println("Broj clanske karte >> ");
-				String membershipCardNum = sc.nextLine();
-// **za sad bez CRUD za automobile**			System.out.println("Dodeliti automobil odmah?  [0 - NE    1 - DA] >> ");
-//				int confirmation = Integer.parseInt(sc.nextLine());
-//				if (confirmation == 1) {
-//					assignVehicleToDriver();
-//				}
-			Vehicle vehicle = null;
-			System.out.println("Status vozaca  [0 - Neaktivan    1 - Aktivan] >> ");
-				DriverStatus status = DriverStatus.values()[Integer.parseInt(sc.nextLine())];
-			boolean deleted = false;
-    	sc.close();
-    	
-    	allDrivers.add(new Driver(username, password, name, lastName, jmbg, gender, phone, address, membershipCardNum, vehicle, status, salary, deleted));
-    	saveDrivers("Drivers.csv");
-    	
-    }
-    
-    public static void editDriver() {
-		System.out.println("Izmeniti vozaca [broj clanske karte] >> ");
-		
-		Scanner sc = new Scanner(System.in);
-		String memberCardNum = sc.nextLine();
-		
-    	for (int i = 0; i < allDrivers.size(); i++) {
-			if (allDrivers.get(i) != null && allDrivers.get(i).getMembershipCardNum().equals(memberCardNum) && !allDrivers.get(i).isDeleted() ) {
-				
-				Driver thisDriver = allDrivers.get(i);
-				
-				System.out.println("Postavite korisnicko ime >> ");
-					thisDriver.setUsername(sc.nextLine());
-		    	System.out.println("Postavite lozinku >> ");
-		    		thisDriver.setPassword(sc.nextLine());
-		    	System.out.println("Ime >> ");
-		    		thisDriver.setName(sc.nextLine());
-		    	System.out.println("Prezime >> ");
-		    		thisDriver.setLastName(sc.nextLine());
-		    	System.out.println("Pol [0 - ZENSKI   1 - MUSKI] >> ");
-		    		thisDriver.setGender(Gender.values()[Integer.parseInt(sc.nextLine())]);
-		    	System.out.println("Telefon >> ");
-		    		thisDriver.setPhoneNum(sc.nextLine());
-		    	System.out.println("Adresa >> ");
-		    		thisDriver.setAddress(sc.nextLine());
-		    	System.out.println("Plata >> ");
-		    		thisDriver.setSalary(Double.parseDouble(sc.nextLine()));
-		    	Vehicle.showAll();
-				System.out.println("Unesite VIN [broj sasije] novog automobila >> ");
-					int vinNum = Integer.parseInt(sc.nextLine());
-					
-					for (Vehicle v : Vehicle.getAllVehicles()) {
-						if ( !v.isDeleted() && v.getHasDriver()==false && v.getVINNum() == vinNum ) {
-							thisDriver.setVehicle(v);
-							v.setHasDriver(true);
-							break;
-						}
-					}
-					
-				System.out.println("Status vozaca  [0 - Neaktivan    1 - Aktivan] >> ");
-				thisDriver.setDriverStatus(DriverStatus.values()[Integer.parseInt(sc.nextLine())]);
-				sc.close();
-				saveDrivers("Drivers.csv");
-				break;
-			}
-		}	
-	}
-    public static void deleteDriver() {
-
-    	System.out.println("Obrisati vozaca [broj clanske karte] >> ");
-		
-		Scanner sc = new Scanner(System.in);
-		String memberCardNum = sc.nextLine();
-		
-    	for (int i = 0; i < allDrivers.size(); i++) {
-			if (allDrivers.get(i) != null && allDrivers.get(i).getMembershipCardNum().equals(memberCardNum) && !allDrivers.get(i).isDeleted() ) {
-				allDrivers.get(i).setDeleted(true);
-				saveDrivers("Drivers.csv");
-				sc.close();
-				break;
-			}
-		}
-	}
     
    /* public static void driverCRUDMenu() {
     	

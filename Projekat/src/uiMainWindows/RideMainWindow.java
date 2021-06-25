@@ -128,7 +128,8 @@ import entities.Ride;
 			
 			//TODO mainToolbar.setBounds(0, 600, 1200, 150);*/
 			this.add(buttonBox, BorderLayout.WEST);
-			
+			taxiSvc.loadInCustomers("Customers.csv");
+			taxiSvc.loadInDrivers("Drivers.csv");
 			taxiSvc.loadInRides("Rides.csv");
 			ArrayList<Ride> rides = taxiSvc.getAllRides();
 			
@@ -137,23 +138,25 @@ import entities.Ride;
 			
 			Object[][] tableData = new Object[rides.size()][tableHeader.length];
 			
-/* Testni Datum */			Calendar today = Calendar.getInstance();
-			today.set(Calendar.HOUR_OF_DAY, 0);
-			
+///* Testni Datum */			Calendar today = Calendar.getInstance();
+//			today.set(Calendar.HOUR_OF_DAY, 0);
+			System.out.println(rides);
 			for (int i = 0; i < rides.size(); i++) {
 				Ride ride = rides.get(i);
 				tableData[i][0] = ride.getRideID();
 				tableData[i][1] = ride.getStatus();
-				tableData[i][2] = null;
-				//TODO tableData[i][2] = ride.getRequestDateTime().toString();
+//				tableData[i][2] = null;
+				tableData[i][2] = ride.getRequestDateTime().toString();
 				tableData[i][3] = ride.getStartingAddress();
 				tableData[i][4] = ride.getDestinationAddress();
 				tableData[i][5] = ride.getDuration();
 				tableData[i][6] = ride.getDistanceTraveled();
-				tableData[i][7] = null;
-				tableData[i][8] = null;
-				//TODO tableData[i][7] = ride.getCustomer();
-				//TODO tableData[i][8] = ride.getDriver();
+//				tableData[i][7] = null;
+//				tableData[i][8] = null;
+				if(ride.getCustomer() != null) tableData[i][7] = ride.getCustomer().getLastName() + " "+ride.getCustomer().getName();
+				else tableData[i][7] = "/";
+				if(ride.getDriver() != null) tableData[i][8] = ride.getDriver().getLastName() + " "+ ride.getDriver().getName();
+				else tableData[i][8] = "/";
 			}
 			
 			tableModel = new DefaultTableModel(tableData, tableHeader);
@@ -191,8 +194,8 @@ import entities.Ride;
 					}else {
 						long rideID = Long.valueOf(tableModel.getValueAt(row, 0).toString());
 						Ride ride = taxiSvc.findRide(rideID);
-						if (ride == null || ride.getStatus() != RequestStatus.values()[0]) {
-							JOptionPane.showMessageDialog(null, "Vo\u017Enja sa tim ID je bila dodeljena ili ne postoji.", "Nepostoje\u0107a vo\u017Enja", JOptionPane.INFORMATION_MESSAGE);
+						if (ride == null || ride.getDriver() != null /*|| ride.getStatus()!= RequestStatus.values()[0] || ride.getStatus()!=RequestStatus.values()[3]*/) {
+							JOptionPane.showMessageDialog(null, "Vo\u017Enja sa tim ID je ve\u0107 dodeljena ili ne postoji.", "Nepostoje\u0107a vo\u017Enja", JOptionPane.INFORMATION_MESSAGE);
 						}else {
 							
 							RideDataForm rdf = new RideDataForm(taxiSvc, ride);

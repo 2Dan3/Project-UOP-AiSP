@@ -2,7 +2,7 @@ package entities;
 
 import java.util.*;
 
-public abstract class User {
+public abstract class User implements Comparable <User> {
 
     protected String username;
 
@@ -29,7 +29,7 @@ public abstract class User {
 		this.password = "";
 		this.name = "";
 		this.lastName = "";
-		this.jmbg = 1000000000;
+		this.jmbg = Long.valueOf("1000000000000");
 		this.gender = Gender.values()[0];
 		this.phoneNum = "";
 		this.address = "";
@@ -164,9 +164,9 @@ public abstract class User {
 	}
 
 	
-	/*public boolean login() {
-        // TODO implement here
-        return false;
-    }*/
+	@Override
+	public int compareTo(User user) {
+		return Long.compare(this.getJmbg(), user.getJmbg());
+	}
 
 }

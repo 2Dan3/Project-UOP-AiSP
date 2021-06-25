@@ -1,14 +1,8 @@
 package entities;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.*;
 
-public class Vehicle {
+public class Vehicle implements Comparable <Vehicle> {
 
 	static ArrayList<Vehicle> allVehicles = new ArrayList<Vehicle>();
 	private String make;
@@ -21,6 +15,11 @@ public class Vehicle {
     private String VINNum;
     private boolean deleted;
     private long carID;
+    private String engineNum;
+    private String lastRegistrationDate;
+    private InsuranceType insurance;
+    private int seats;
+    
 	
     public Vehicle() {
     	super();
@@ -34,11 +33,15 @@ public class Vehicle {
 		this.VINNum = "";
 		this.deleted = false;
 		this.carID = 0;
+		this.engineNum = "";
+	    this.lastRegistrationDate = "";
+	    this.insurance = InsuranceType.values()[0];
+	    this.seats = 4;
     }
     
 
     public Vehicle(String make, String model, int yearOfMake, String registrationNum, String taxiVehicleNum,
-			VehicleType type, boolean hasDriver, String VINNum, boolean deleted, long carID) {
+			VehicleType type, boolean hasDriver, String VINNum, boolean deleted, long carID, String engineNum, String lastRegistrationDate, InsuranceType insurance, int seats) {
 		super();
 		this.make = make;
 		this.model = model;
@@ -50,21 +53,55 @@ public class Vehicle {
 		this.VINNum = VINNum;
 		this.deleted = deleted;
 		this.carID = carID;
+		this.engineNum = engineNum;
+	    this.lastRegistrationDate = lastRegistrationDate;
+	    this.insurance = insurance;
+	    this.seats = seats;
 	}
     
     // GETTERS & SETTERS
     
-    public static ArrayList<Vehicle> getAllVehicles() {
-		return allVehicles;
+    	
+	public String getEngineNum() {
+		return engineNum;
 	}
-    
 
-	public void setAllVehicles(ArrayList<Vehicle> allVehicles) {
-		this.allVehicles = allVehicles;
+
+	public void setEngineNum(String engineNum) {
+		this.engineNum = engineNum;
 	}
-    
-	
-	
+
+
+	public String getLastRegistrationDate() {
+		return lastRegistrationDate;
+	}
+
+
+	public void setLastRegistrationDate(String lastRegistrationDate) {
+		this.lastRegistrationDate = lastRegistrationDate;
+	}
+
+
+	public InsuranceType getInsurance() {
+		return insurance;
+	}
+
+
+	public void setInsurance(InsuranceType insurance) {
+		this.insurance = insurance;
+	}
+
+
+	public int getSeats() {
+		return seats;
+	}
+
+
+	public void setSeats(int seats) {
+		this.seats = seats;
+	}
+
+
 	public boolean isDeleted() {
 		return deleted;
 	}
@@ -170,7 +207,10 @@ public class Vehicle {
 				+ ", VINNum=" + VINNum + "]";
 	}
 
-    
+	@Override
+	public int compareTo(Vehicle v) {
+		return Long.compare(this.getCarID(), v.getCarID());
+	}
     
     public static void showAll() {
     	for (Vehicle v : allVehicles) {
@@ -180,69 +220,5 @@ public class Vehicle {
 
     
     // FILE IO
-    
-    
-    public void loadInVehicles(String filename) {
-    	
-    	String sp = System.getProperty("file.separator");
-    	
-		try {
-			File file = new File("src" + sp + "dataFiles" + sp + filename);
-		
-			BufferedReader reader = new BufferedReader(new FileReader(file));
-			
-			String row;
-			while ((row = reader.readLine()) != null) {
-				
-				String[] split = row.split("\\|");
-				
-				
-				String make = split[0];
-				String model = split[1];
-				int yearOfMake = Integer.parseInt(split[2]);
-				String registrationNum = split[3];
-				String taxiVehicleNum = split[4];
-				VehicleType type = VehicleType.values()[Integer.parseInt(split[5])];
-				boolean hasDriver = Boolean.parseBoolean(split[6]);
-				String VINNum= split[7];
-				boolean deleted = Boolean.parseBoolean(split[8]);
-				long carID = Long.valueOf(split[9]);
-				
-				Vehicle vehicle1 = new Vehicle(make, model, yearOfMake, registrationNum, taxiVehicleNum,
-					 type, hasDriver, VINNum, deleted, carID);
-				allVehicles.add(vehicle1);
-
-			}
-			reader.close();
-			
-		} catch (IOException e) {
-			System.out.println("Greska prilikom citanja podataka o vozilima.");
-			e.printStackTrace();
-		}
-	}
-    
-    
-    public void saveVehicles(String filename) {
-    	
-    	String sp = System.getProperty("file.separator");
-    	
-		try {
-			File file = new File("src" + sp + "dataFiles" + sp + filename);
-		
-			String content = "";
-			for (Vehicle vehicle: allVehicles) {
-				content += vehicle.getMake() + "|" + vehicle.getModel() + "|"
-						+ vehicle.getYearOfMake() + "|" + vehicle.getRegistrationNum() + "|"
-						+ vehicle.getTaxiVehicleNum() + "|" + vehicle.getType() + "|"
-						+ vehicle.getHasDriver() + "|" + vehicle.getVINNum() + "|" + vehicle.isDeleted() + "|" + vehicle.carID +"\n";
-			}
-			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-			writer.write(content);
-			writer.close();
-			
-		} catch (IOException e) {
-			System.out.println("Greska prilikom upisivanja vozila.");
-		}
-	}
-
+    		
 }

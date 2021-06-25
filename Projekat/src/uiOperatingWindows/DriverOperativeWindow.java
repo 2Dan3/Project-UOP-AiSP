@@ -148,8 +148,10 @@ public class DriverOperativeWindow extends JFrame {
 				tableData[i][5] = dr.getGender().toString();
 				tableData[i][6] = dr.getPhoneNum();
 				tableData[i][7] = dr.getAddress();
-				tableData[i][8] = null;
-				// TODO tableData[i][8] = dr.getVehicle().getModel();
+//				tableData[i][8] = null;
+				if (dr.getVehicle()!=null)	tableData[i][8] = dr.getVehicle().getMake() +" "+dr.getVehicle().getModel();
+				else tableData[i][8] = "/";
+				
 				tableData[i][9] = dr.getMembershipCardNum();
 				tableData[i][10] = dr.getDriverStatus().toString();
 				tableData[i][11] = dr.getSalary();
@@ -197,7 +199,7 @@ public class DriverOperativeWindow extends JFrame {
 					if(row == -1) {
 						JOptionPane.showMessageDialog(null, "Molimo, pre izmene ozna\u010Dite red u tabeli!", "Pa\u017Enja", JOptionPane.WARNING_MESSAGE);
 					}else {
-						long jmbg = (long) tableModel.getValueAt(row, 4);
+						String jmbg = (String) tableModel.getValueAt(row, 4);
 						Driver driver = taxiSvc.findDriver(jmbg);
 						if(driver == null) {
 							JOptionPane.showMessageDialog(null, "Voza\u010D sa tim JMBG nije prona\u0111en.", "Gre\u0161ka", JOptionPane.INFORMATION_MESSAGE);
@@ -215,7 +217,7 @@ public class DriverOperativeWindow extends JFrame {
 					if(row == -1) {
 						JOptionPane.showMessageDialog(null, "Molimo, ozna\u010Dite red u tabeli!", "Gre\u0161ka", JOptionPane.WARNING_MESSAGE);
 					}else {
-						long jmbg = (long) tableModel.getValueAt(row, 4);
+						String jmbg = (String)tableModel.getValueAt(row, 4);
 						String username = tableModel.getValueAt(row, 0).toString();
 						Driver driver = taxiSvc.findDriver(jmbg);
 						if(driver == null) {

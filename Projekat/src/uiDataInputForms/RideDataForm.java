@@ -3,6 +3,7 @@ package uiDataInputForms;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -58,10 +59,10 @@ public class RideDataForm extends JFrame {
 	/*}*/
 		ArrayList<Driver> nonBusyDrivers = taxiSvc.getNonBusyDrivers();
 		
-		String[] tableHeaderr = new String[] {"Korisni\u010Dko ime","Ime","Prezime",
+		String[] tableHeader = new String[] {"Korisni\u010Dko ime","Ime","Prezime",
 				"JMBG","Br.\u010Dlanske karte","Vozilo"};
 		
-		Object[][] tableData = new Object[nonBusyDrivers.size()][tableHeaderr.length];
+		Object[][] tableData = new Object[nonBusyDrivers.size()][tableHeader.length];
 		
 		for (int i = 0; i < nonBusyDrivers.size(); i++) {
 			Driver dr = nonBusyDrivers.get(i);
@@ -70,11 +71,12 @@ public class RideDataForm extends JFrame {
 			tableData[i][2] = dr.getLastName();
 			tableData[i][3] = dr.getJmbg();
 			tableData[i][4] = dr.getMembershipCardNum();
-			tableData[i][5] = null;
-			//TODO tableData[i][5] = dr.getVehicle().getModel() + " " + dr.getVehicle().getMake();
+//			
+			if(dr.getVehicle()!=null)	tableData[i][5] = dr.getVehicle().getMake() + " " + dr.getVehicle().getModel();
+			else tableData[i][5] = "/";
 		}
 		
-		tableModel = new DefaultTableModel(tableData, tableHeaderr);
+		tableModel = new DefaultTableModel(tableData, tableHeader);
 		driverTable = new JTable(tableModel);
 		
 		driverTable.setGridColor(Color.blue);
@@ -88,25 +90,26 @@ public class RideDataForm extends JFrame {
 		DefaultTableCellRenderer centerRend = new DefaultTableCellRenderer();
 		centerRend.setHorizontalAlignment(SwingConstants.CENTER);
 		
-		for (int i = 0; i < tableHeaderr.length; i++) {
+		for (int i = 0; i < tableHeader.length; i++) {
 			driverTable.getColumnModel().getColumn(i).setCellRenderer(centerRend);
 		}
 		
 		JScrollPane scroller = new JScrollPane(driverTable);
 		this.add(scroller);	
 	
-	BorderLayout layout = new BorderLayout();
-	setLayout(layout);
+//	GridLayout layout = new GridLayout(2, 1, 5, 5);
+//	setLayout(layout);
 	
+		
 	getRootPane().setDefaultButton(btnAssign);
 	
-	btnAssign.setSize(70, 50);
-	btnCancel.setSize(70, 50);
+//	btnAssign.setSize(70, 50);
+//	btnCancel.setSize(70, 50);
 	
-	add(driverTable, BorderLayout.NORTH);
+//	add(driverTable);
 //	add(new JLabel());
-	add(btnAssign);
-	add(btnCancel);
+	add(btnAssign, BorderLayout.SOUTH);
+//	add(btnCancel, BorderLayout.SOUTH);
 	
 	
 	}
@@ -130,20 +133,26 @@ public class RideDataForm extends JFrame {
 						JOptionPane.showMessageDialog(RideDataForm.this, "Molimo, pre dodele ozna\u010Dite voza\u010Da u tabeli!", "Pa\u017Enja", JOptionPane.WARNING_MESSAGE);
 					}else {
 						
-						long jmbg = (long) (tableModel.getValueAt(row, 3));
+						String jmbg = (String)(tableModel.getValueAt(row, 3));
 						Driver driver = taxiSvc.findDriver(jmbg);
 						
-						ride.setDriver(driver);
-						ride.setStatus(RequestStatus.ASSIGNED);
-						driver.setDriverStatus(DriverStatus.values()[0]);
+						if(driver.getVehicle().equals(null)) {
+							JOptionPane.showMessageDialog(RideDataForm.this, "Odabranom voza\u010Du je potrebno dodeliti automobil, pre dodele vo\u017Enje!", "Gre\u0161ka", JOptionPane.WARNING_MESSAGE);
+						}
+						else {
+							ride.setDriver(driver);
+							ride.setStatus(RequestStatus.ASSIGNED);
 						
-						JOptionPane.showMessageDialog(RideDataForm.this, "Voza\u010D je uspe\u0161no dodeljen za vo\u017Enju - \'" + ride.getRideID() + "\'.", "Voza\u010D :: DODELJEN", JOptionPane.INFORMATION_MESSAGE);
-					//TODO uncomment: 
-						taxiSvc.saveRides("Rides.csv");
-						taxiSvc.saveDrivers("Drivers.csv");
+							JOptionPane.showMessageDialog(RideDataForm.this, "Voza\u010D je uspe\u0161no dodeljen za vo\u017Enju - \'" + ride.getRideID() + "\'.", "Voza\u010D :: DODELJEN", JOptionPane.INFORMATION_MESSAGE);
+							taxiSvc.saveRides("Rides.csv");
+							taxiSvc.saveDrivers("Drivers.csv");
+							
+							RideDataForm.this.dispose();
+							RideDataForm.this.setVisible(false);
+						}
 						
-						RideDataForm.this.dispose();
-						RideDataForm.this.setVisible(false);
+						
+						
 					}
 			}
 		});
