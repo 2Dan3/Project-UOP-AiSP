@@ -123,16 +123,17 @@ public class CustomerMainWindow extends JFrame {
 			Ride ride = rides.get(i);
 			tableData[i][0] = ride.getRideID();
 			tableData[i][1] = ride.getStatus();
-//			tableData[i][2] = null;
 			tableData[i][2] = ride.getRequestDateTime().toString();
 			tableData[i][3] = ride.getStartingAddress();
 			tableData[i][4] = ride.getDestinationAddress();
 			tableData[i][5] = ride.getDuration();
 			tableData[i][6] = ride.getDistanceTraveled();
-//			tableData[i][7] = null;
-//			tableData[i][8] = null;
-			tableData[i][7] = ride.getCustomer();
-			tableData[i][8] = ride.getDriver();
+			
+			if(ride.getCustomer().equals(null))    tableData[i][7] = "";
+			else tableData[i][7] = ride.getCustomer().getName() + " " + ride.getCustomer().getLastName();
+
+			if(ride.getDriver().equals(null))    tableData[i][8] = "";
+			else tableData[i][8] = ride.getDriver().getName() + " " + ride.getDriver().getLastName();
 		}
 		
 		tableModel = new DefaultTableModel(tableData, tableHeader);

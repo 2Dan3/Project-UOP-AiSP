@@ -8,6 +8,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
+import dataStructures.MyArrayList;
+
 public class TaxiService {
 
     public static String TAXIDNUM;
@@ -30,6 +32,8 @@ public class TaxiService {
     
     private ArrayList <Vehicle> allVehicles;
     
+    private MyArrayList auctionApplications = new MyArrayList();
+    
     
     public TaxiService() {
     	this.allDispatchers = new ArrayList<Dispatcher>();
@@ -42,7 +46,7 @@ public class TaxiService {
     	System.out.println(TAXIDNUM+ LOCATION+ NAME+ STARTINGPRICE+ PRICEPERKM);
     }
     
- // GETTERS & SETTERS
+ // GETTERS
 
     public ArrayList<Dispatcher> getAllDispatchers() {
     	return allDispatchers;
@@ -62,6 +66,10 @@ public class TaxiService {
     public ArrayList<Ride> getAllRides() {
 		return allRides;
 	}
+    
+    public MyArrayList getAuctionApplications() {
+    	return auctionApplications;
+    }
     
     
     
@@ -206,8 +214,8 @@ public class TaxiService {
 		return null;
 	}
     
-
-	public Driver findDriver(String JMBG) {
+// OLD FUNCTION
+	public Driver UNUSEDfindDriver(String JMBG) {
 		
 		if(JMBG.trim().isBlank()) return null;
 		
@@ -677,22 +685,92 @@ public class TaxiService {
 		return rides;
 	}
 	
-	private static int binarySearchId(long id, List<User> allUsers) {
+	
+	
+	//
+	
+	public void loadInDriverAuctionApplications(String filename) {
+		String sp = System.getProperty("file.separator");
+    	
+		try {
+			File file = new File("src" + sp + "dataFiles" + sp + filename);
+		
+			BufferedReader reader = new BufferedReader(new FileReader(file));
+			
+			String row;
+			while ((row = reader.readLine()) != null) {
+				
+				String[] split = row.split("\\|");
+				
+				Driver driver = findDriver(split[0]);
+				long rideID = Long.parseLong(split[1]);
+				int arrivalTime = Integer.parseInt(split[2]);
+				
+				AuctionApplication newAuctionApplication = new AuctionApplication(driver, rideID, arrivalTime);
+				
+				auctionApplications.add(newAuctionApplication);
+			}
+			reader.close();
+		} catch (IOException e) {
+			System.out.println("Gre\u0161ka prilikom \u010Ditanja prijava za aukciju.");
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public void saveDriverAuctionApplications(String filename) throws Exception {
+    	
+//		Collections.sort(auctionApplications);
+		
+    	String sp = System.getProperty("file.separator");
+    	
+		try {
+			File file = new File("src" + sp + "dataFiles" + sp + filename);
+		
+			String content = "";
+			for (int i = 0; i < auctionApplications.length(); i++) {
+				AuctionApplication a = (AuctionApplication)auctionApplications.get(i);
+				content +=
+						  a.getDriver() + "|" + a.getRideID() + "|" + a.getArrivalTimeInMins() +"\n";
+			}
+			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+			writer.write(content);
+			writer.close();
+			
+		} catch (IOException e) {
+			System.out.println("Gre\u0161ka prilikom pisanja prijava za aukciju.");
+		}
+	}
+	
+	
+	
+	
+	
+	
+	private Driver findDriver(String ID) {
+		
+		if(ID.trim().isBlank()) return null;
+		
+		long id = Long.valueOf(ID);
 		
 		int firstEl = 0;
-		int lastEl = allUsers.size() -1;
+		int lastEl = allDrivers.size() -1;
+		int midEl;
 		
 		while(lastEl >= firstEl) {
 			
+//			midEl = (lastEl - firstEl) /2  +firstEl;
+			midEl = (firstEl + lastEl) / 2;
 			
-			int midEl = (lastEl - firstEl) /2  +firstEl;
+			Driver middleUser = allDrivers.get(midEl);
 			
-			if(allUsers.get(midEl).getJmbg() == id)	return midEl;
+			if(middleUser.getJmbg() == id)	return middleUser;
 			
-			if(allUsers.get(midEl).getJmbg() < id)	firstEl = midEl +1;
+			if(middleUser.getJmbg() < id)	firstEl = midEl +1;
+			else 					lastEl = midEl -1;
 		}
-		// TODO :   
-		return lastEl;
+		
+		return null;
 	}
 	
 	
