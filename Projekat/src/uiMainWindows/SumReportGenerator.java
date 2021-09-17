@@ -35,10 +35,10 @@ public class SumReportGenerator extends JFrame{
 	private JLabel lblTotalRides = new JLabel("Ukupno realizovanih vo\u017Enji >> ");
 	private JTextField txtTotalRides = new JTextField();
 	
-	private JLabel lblAppRides = new JLabel("Vo\u017E poru\u010Dene aplikacijom >> ");
+	private JLabel lblAppRides = new JLabel("Vo\u017Enje poru\u010Dene aplikacijom >> ");
 	private JTextField txtAppRides = new JTextField();
 	
-	private JLabel lblPhoneRides = new JLabel("Vo\u017E poru\u010Dene telefonom >> ");
+	private JLabel lblPhoneRides = new JLabel("Vo\u017Enje poru\u010Dene telefonom >> ");
 	private JTextField txtPhoneRides = new JTextField();
 	
 	private JLabel lblActiveDrivers = new JLabel("Aktivnih voza\u010Da >> ");

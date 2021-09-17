@@ -2,6 +2,7 @@ package dataStructures;
 
 import java.util.Arrays;
 
+
 public class MyArrayList {
 	
 private static final int SIZE_FACTOR=1;
@@ -20,7 +21,7 @@ private static final int SIZE_FACTOR=1;
 	public void add(Object obj){
 //		System.out.println("index: "+this.index+" size: "+this.size+" data size: "+this.data.length);
 		if(this.index == this.size){
-			//increasing the size of data[]
+			
 			increaseSizeAndReallocate();
 		}
 		data[this.index] = obj;

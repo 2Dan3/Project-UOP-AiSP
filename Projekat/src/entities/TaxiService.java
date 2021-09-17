@@ -747,7 +747,7 @@ public class TaxiService {
 	
 	
 	
-	private Driver findDriver(String ID) {
+	public Driver findDriver(String ID) {
 		
 		if(ID.trim().isBlank()) return null;
 		
@@ -759,7 +759,7 @@ public class TaxiService {
 		
 		while(lastEl >= firstEl) {
 			
-//			midEl = (lastEl - firstEl) /2  +firstEl;
+			
 			midEl = (firstEl + lastEl) / 2;
 			
 			Driver middleUser = allDrivers.get(midEl);
@@ -767,7 +767,8 @@ public class TaxiService {
 			if(middleUser.getJmbg() == id)	return middleUser;
 			
 			if(middleUser.getJmbg() < id)	firstEl = midEl +1;
-			else 					lastEl = midEl -1;
+			
+			else 							lastEl = midEl -1;
 		}
 		
 		return null;

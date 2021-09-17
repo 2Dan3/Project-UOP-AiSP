@@ -121,7 +121,6 @@ public class LoginUI extends JFrame {
 				if (username.equals("") || pass.equals(""))
 					JOptionPane.showMessageDialog (null, "Molimo, unesite sve podatke!", "Pa\u017Enja", JOptionPane.WARNING_MESSAGE);
 				else {
-					//TODO Uprostiti, staviti u Login funkciju u drugi fajl, zatim pozvati odavde :
 					  
 					if(rolesComboBox.getSelectedItem() == Roles.values()[2]) {//TODO videti zasto je error kod poziva Dispatcher.getNonDeletedDispatchers() ! ! ! 
 						for (Dispatcher user : taxiSvc.getNonDeletedDispatchers()) {
@@ -134,8 +133,6 @@ public class LoginUI extends JFrame {
 								break;
 							}
 						}
-//						System.out.println("undel" +taxiSvc.getNonDeletedDispatchers());
-//						System.out.println("  all" +taxiSvc.getAllDispatchers());
 						
 					}else if(rolesComboBox.getSelectedItem() == Roles.values()[1]) {
 						for (Driver user : taxiSvc.getNonDeletedDrivers()) {
